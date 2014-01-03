@@ -6,6 +6,6 @@ package org.uberfire.workbench.events;
  * Time: 5:30 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ApplicationReadyEvent {
+public class ApplicationReadyEvent extends UberFireEvent {
 
 }
