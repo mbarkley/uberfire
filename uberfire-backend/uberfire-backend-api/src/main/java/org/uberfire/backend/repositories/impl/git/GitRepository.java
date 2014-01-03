@@ -131,4 +131,10 @@ public class GitRepository implements Repository {
         return result;
     }
 
+    @Override
+    public String toString() {
+      return "GitRepository [alias=" + alias + ", environment=" + environment + ", root=" + root + ", roles=" + roles
+              + ", publicURI=" + publicURI + "]";
+    }
+
 }
