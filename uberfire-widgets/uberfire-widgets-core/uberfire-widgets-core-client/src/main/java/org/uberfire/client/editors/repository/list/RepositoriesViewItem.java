@@ -12,12 +12,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.uberfire.commons.validation.PortablePreconditions;
 import org.uberfire.client.resources.i18n.CoreConstants;
 
-/**
- * Created with IntelliJ IDEA.
- * Date: 24/09/13
- * Time: 18:19
- * To change this template use File | Settings | File Templates.
- */
 public class RepositoriesViewItem extends Composite {
 
     interface RepositoriesViewItemBinder
