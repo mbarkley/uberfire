@@ -49,7 +49,6 @@ import org.uberfire.security.impl.RoleImpl;
 import org.uberfire.security.server.HttpSecurityContext;
 import org.uberfire.security.server.cdi.SecurityFactory;
 
-//TODO {porcelli} support for jaas!
 public class HttpAuthenticationManager implements AuthenticationManager {
 
     private final List<AuthenticationScheme> authSchemes;

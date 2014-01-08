@@ -2,6 +2,7 @@ package org.uberfire.backend.server.repositories;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,15 +18,20 @@ import org.uberfire.backend.organizationalunit.OrganizationalUnitService;
 import org.uberfire.backend.repositories.NewRepositoryEvent;
 import org.uberfire.backend.repositories.Repository;
 import org.uberfire.backend.repositories.RepositoryAlreadyExistsException;
+import org.uberfire.backend.repositories.RepositoryInfo;
 import org.uberfire.backend.repositories.RepositoryService;
+import org.uberfire.backend.repositories.impl.PortableVersionRecord;
 import org.uberfire.backend.server.config.ConfigGroup;
 import org.uberfire.backend.server.config.ConfigItem;
 import org.uberfire.backend.server.config.ConfigType;
 import org.uberfire.backend.server.config.ConfigurationFactory;
 import org.uberfire.backend.server.config.ConfigurationService;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.server.util.TextUtil;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.base.version.VersionAttributeView;
+import org.uberfire.java.nio.base.version.VersionRecord;
 import org.uberfire.java.nio.file.FileSystem;
 
 import static org.uberfire.backend.server.config.ConfigType.*;
@@ -36,9 +42,15 @@ import static org.uberfire.backend.server.util.Paths.*;
 @ApplicationScoped
 public class RepositoryServiceImpl implements RepositoryService {
 
+    private static final int HISTORY_PAGE_SIZE = 10;
+
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
+
+    @Inject
+    @Named("system")
+    private Repository systemRepository;
 
     @Inject
     private ConfigurationService configurationService;
@@ -89,6 +101,25 @@ public class RepositoryServiceImpl implements RepositoryService {
         return configuredRepositories.get( alias );
     }
 
+    public Repository getRepository( final FileSystem fs ) {
+        if ( fs == null ) {
+            return null;
+        }
+
+        final org.uberfire.backend.vfs.FileSystem fsystem = Paths.convert( fs );
+        for ( final Repository repository : configuredRepositories.values() ) {
+            if ( repository.getRoot().getFileSystem().equals( fsystem ) ) {
+                return repository;
+            }
+        }
+
+        if ( systemRepository.getRoot().getFileSystem().equals( fsystem ) ) {
+            return systemRepository;
+        }
+
+        return null;
+    }
+
     @Override
     public Repository getRepository( final Path root ) {
         return rootToRepo.get( root );
@@ -116,7 +147,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                                         final String alias,
                                         final Map<String, Object> env ) {
 
-        if ( configuredRepositories.containsKey( alias ) ) {
+        if ( configuredRepositories.containsKey( alias ) || SystemRepository.SYSTEM_REPO.getAlias().equals( alias ) ) {
             throw new RepositoryAlreadyExistsException( alias );
         }
         final ConfigGroup repositoryConfig = configurationFactory.newConfigGroup( REPOSITORY, alias, "" );
@@ -233,4 +264,59 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
     }
 
+    public RepositoryInfo getRepositoryInfo( final String alias ) {
+        final Repository repo = getRepository( alias );
+        String ouName = null;
+        for ( final OrganizationalUnit ou : organizationalUnitService.getOrganizationalUnits() ) {
+            for ( Repository repository : ou.getRepositories() ) {
+                if ( repository.getAlias().equals( alias ) ) {
+                    ouName = ou.getName();
+                }
+            }
+        }
+
+        final VersionAttributeView versionAttributeView = ioService.getFileAttributeView( Paths.convert( repo.getRoot() ), VersionAttributeView.class );
+        final List<VersionRecord> records = versionAttributeView.readAttributes().history().records();
+        Collections.reverse( records );
+
+        return new RepositoryInfo( alias, ouName, repo.getRoot(), repo.getPublicURIs(), new ArrayList<VersionRecord>( HISTORY_PAGE_SIZE ) {{
+            int size = 0;
+            for ( final VersionRecord record : records ) {
+                add( new PortableVersionRecord( record.id(), record.author(), record.email(), record.comment(), record.date(), record.uri() ) );
+                size++;
+                if ( size > HISTORY_PAGE_SIZE ) {
+                    break;
+                }
+            }
+        }} );
+    }
+
+    @Override
+    public List<VersionRecord> getRepositoryHistory( final String alias,
+                                                     final int startIndex ) {
+        final Repository repo = getRepository( alias );
+
+        final VersionAttributeView versionAttributeView = ioService.getFileAttributeView( Paths.convert( repo.getRoot() ), VersionAttributeView.class );
+
+        final List<VersionRecord> records = versionAttributeView.readAttributes().history().records();
+
+        if ( records.size() <= startIndex ) {
+            return Collections.emptyList();
+        }
+
+        Collections.reverse( records );
+        final List<VersionRecord> result = new ArrayList<VersionRecord>( HISTORY_PAGE_SIZE );
+
+        int size = 0;
+
+        for ( final VersionRecord record : records.subList( startIndex, records.size() > startIndex + HISTORY_PAGE_SIZE ? startIndex + HISTORY_PAGE_SIZE : records.size() ) ) {
+            result.add( new PortableVersionRecord( record.id(), record.author(), record.email(), record.comment(), record.date(), record.uri() ) );
+            size++;
+            if ( size > HISTORY_PAGE_SIZE ) {
+                break;
+            }
+        }
+
+        return result;
+    }
 }

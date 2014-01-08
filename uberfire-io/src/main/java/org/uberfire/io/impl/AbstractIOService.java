@@ -36,7 +36,7 @@ import java.util.Set;
 import org.uberfire.commons.lock.LockService;
 import org.uberfire.io.FileSystemType;
 import org.uberfire.io.IOWatchService;
-import org.uberfire.io.impl.lock.ThreadLockServiceImpl;
+import org.uberfire.commons.lock.impl.ThreadLockServiceImpl;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.base.AbstractPath;
 import org.uberfire.java.nio.base.FileSystemState;
@@ -58,8 +58,13 @@ import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.ProviderNotFoundException;
 import org.uberfire.java.nio.file.StandardOpenOption;
+import org.uberfire.java.nio.file.api.FileSystemProviders;
 import org.uberfire.java.nio.file.attribute.FileAttribute;
 import org.uberfire.java.nio.file.attribute.FileTime;
+import org.uberfire.java.nio.file.spi.FileSystemProvider;
+import org.uberfire.java.nio.security.SecurityAware;
+import org.uberfire.security.auth.AuthenticationManager;
+import org.uberfire.security.authz.AuthorizationManager;
 
 import static org.uberfire.commons.validation.Preconditions.*;
 import static org.uberfire.java.nio.file.StandardOpenOption.*;
@@ -657,5 +662,23 @@ public abstract class AbstractIOService implements IOServiceIdentifiable {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public void setAuthenticationManager( final AuthenticationManager authenticationManager ) {
+        for ( final FileSystemProvider fileSystemProvider : FileSystemProviders.installedProviders() ) {
+            if ( fileSystemProvider instanceof SecurityAware ) {
+                ( (SecurityAware) fileSystemProvider ).setAuthenticationManager( authenticationManager );
+            }
+        }
+    }
+
+    @Override
+    public void setAuthorizationManager( final AuthorizationManager authorizationManager ) {
+        for ( final FileSystemProvider fileSystemProvider : FileSystemProviders.installedProviders() ) {
+            if ( fileSystemProvider instanceof SecurityAware ) {
+                ( (SecurityAware) fileSystemProvider ).setAuthorizationManager( authorizationManager );
+            }
+        }
     }
 }

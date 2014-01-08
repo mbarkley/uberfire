@@ -77,6 +77,7 @@ import org.uberfire.java.nio.base.version.VersionRecord;
 import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.java.nio.file.attribute.FileTime;
+import org.uberfire.java.nio.fs.jgit.CommitInfo;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
 import static java.util.Collections.*;
@@ -161,7 +162,7 @@ public final class JGitUtil {
         throw new NoSuchFileException( "" );
     }
 
-    private static String fixPath( final String path ) {
+    public static String fixPath( final String path ) {
 
         if ( path.equals( "/" ) ) {
             return "";
@@ -294,9 +295,9 @@ public final class JGitUtil {
     }
 
     public static void pushRepository( final Git git,
-            final CredentialsProvider credentialsProvider,
-            final String origin,
-            boolean force )
+                                       final CredentialsProvider credentialsProvider,
+                                       final String origin,
+                                       boolean force )
             throws InvalidRemoteException {
 
         if ( origin != null && !origin.isEmpty() ) {
@@ -319,7 +320,7 @@ public final class JGitUtil {
                         .setCredentialsProvider( credentialsProvider )
                         .setRefSpecs( specs )
                         .setRemote( origin )
-                        .setForce(force)
+                        .setForce( force )
                         .setPushAll()
                         .call();
 
@@ -353,7 +354,7 @@ public final class JGitUtil {
             oldTreeIter.reset( reader, oldRef );
             CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
             newTreeIter.reset( reader, newRef );
-            return new Git( repo ).diff().setNewTree( newTreeIter ).setOldTree( oldTreeIter ).setShowNameAndStatusOnly( true ).call();
+            return new CustomDiffCommand( repo ).setNewTree( newTreeIter ).setOldTree( oldTreeIter ).setShowNameAndStatusOnly( true ).call();
         } catch ( final Exception ex ) {
             throw new RuntimeException( ex );
         }
@@ -368,15 +369,56 @@ public final class JGitUtil {
                                final Date when,
                                final boolean amend,
                                final Map<String, File> content ) {
+        commit( git, branchName, new CommitInfo( null, name, email, message, timeZone, when ), amend, new DefaultCommitContent( content ) );
+    }
 
-        final PersonIdent author = buildPersonIdent( git, name, email, timeZone, when );
+    public static void commit( final Git git,
+                               final String branchName,
+                               final CommitInfo commitInfo,
+                               final boolean amend,
+                               final CommitContent content ) {
+        if (content instanceof RevertCommitContent){
+            commit( git, branchName, commitInfo, amend, resolveObjectId( git, ( (RevertCommitContent) content ).getRefTree() ), content );
+        } else {
+            commit( git, branchName, commitInfo, amend, null, content );
+        }
+    }
+
+    public static void commit( final Git git,
+                               final String branchName,
+                               final CommitInfo commitInfo,
+                               final boolean amend,
+                               final ObjectId _originId,
+                               final CommitContent content ) {
+
+        final PersonIdent author = buildPersonIdent( git, commitInfo.getName(), commitInfo.getEmail(), commitInfo.getTimeZone(), commitInfo.getWhen() );
 
         try {
             final ObjectInserter odi = git.getRepository().newObjectInserter();
             try {
                 // Create the in-memory index of the new/updated issue.
                 final ObjectId headId = git.getRepository().resolve( branchName + "^{commit}" );
-                final DirCache index = createTemporaryIndex( git, headId, content );
+
+                final ObjectId originId;
+                if ( _originId == null ) {
+                    originId = git.getRepository().resolve( branchName + "^{commit}" );
+                } else {
+                    originId = _originId;
+                }
+
+                final DirCache index;
+                if ( content instanceof DefaultCommitContent ) {
+                    index = createTemporaryIndex( git, originId, (DefaultCommitContent) content );
+                } else if ( content instanceof MoveCommitContent ) {
+                    index = createTemporaryIndex( git, originId, (MoveCommitContent) content );
+                } else if ( content instanceof CopyCommitContent ) {
+                    index = createTemporaryIndex( git, originId, (CopyCommitContent) content );
+                } else if ( content instanceof RevertCommitContent ) {
+                    index = createTemporaryIndex( git, originId );
+                } else {
+                    index = null;
+                }
+
                 if ( index != null ) {
                     final ObjectId indexTreeId = index.writeTree( odi );
 
@@ -385,7 +427,7 @@ public final class JGitUtil {
                     commit.setAuthor( author );
                     commit.setCommitter( author );
                     commit.setEncoding( Constants.CHARACTER_ENCODING );
-                    commit.setMessage( message );
+                    commit.setMessage( commitInfo.getMessage() );
                     //headId can be null if the repository has no commit yet
                     if ( headId != null ) {
                         if ( amend ) {
@@ -467,7 +509,9 @@ public final class JGitUtil {
      */
     private static DirCache createTemporaryIndex( final Git git,
                                                   final ObjectId headId,
-                                                  final Map<String, File> content ) {
+                                                  final DefaultCommitContent commitContent ) {
+
+        final Map<String, File> content = commitContent.getContent();
 
         final Map<String, Pair<File, ObjectId>> paths = new HashMap<String, Pair<File, ObjectId>>( content.size() );
         final Set<String> path2delete = new HashSet<String>();
@@ -564,6 +608,162 @@ public final class JGitUtil {
         return inCoreIndex;
     }
 
+    private static DirCache createTemporaryIndex( final Git git,
+                                                  final ObjectId headId,
+                                                  final MoveCommitContent commitContent ) {
+        final Map<String, String> content = commitContent.getContent();
+
+        final DirCache inCoreIndex = DirCache.newInCore();
+        final DirCacheEditor editor = inCoreIndex.editor();
+
+        try {
+            if ( headId != null ) {
+                final TreeWalk treeWalk = new TreeWalk( git.getRepository() );
+                final int hIdx = treeWalk.addTree( new RevWalk( git.getRepository() ).parseTree( headId ) );
+                treeWalk.setRecursive( true );
+
+                while ( treeWalk.next() ) {
+                    final String walkPath = treeWalk.getPathString();
+                    final CanonicalTreeParser hTree = treeWalk.getTree( hIdx, CanonicalTreeParser.class );
+
+                    final String toPath = content.get( walkPath );
+
+                    if ( toPath == null ) {
+                        final DirCacheEntry dcEntry = new DirCacheEntry( walkPath );
+                        final ObjectId _objectId = hTree.getEntryObjectId();
+                        final FileMode _fileMode = hTree.getEntryFileMode();
+
+                        // add to temporary in-core index
+                        editor.add( new DirCacheEditor.PathEdit( dcEntry ) {
+                            @Override
+                            public void apply( final DirCacheEntry ent ) {
+                                ent.setObjectId( _objectId );
+                                ent.setFileMode( _fileMode );
+                            }
+                        } );
+                    } else {
+                        final DirCacheEntry dcEntry = new DirCacheEntry( toPath );
+                        final ObjectId _objectId = hTree.getEntryObjectId();
+                        final FileMode _fileMode = hTree.getEntryFileMode();
+
+                        editor.add( new DirCacheEditor.PathEdit( dcEntry ) {
+                            @Override
+                            public void apply( final DirCacheEntry ent ) {
+                                ent.setFileMode( _fileMode );
+                                ent.setObjectId( _objectId );
+                            }
+                        } );
+                    }
+                }
+                treeWalk.release();
+            }
+
+            editor.finish();
+        } catch ( final Exception e ) {
+            throw new RuntimeException( e );
+        }
+
+        return inCoreIndex;
+    }
+
+    private static DirCache createTemporaryIndex( final Git git,
+                                                  final ObjectId headId,
+                                                  final CopyCommitContent commitContent ) {
+        final Map<String, String> content = commitContent.getContent();
+
+        final DirCache inCoreIndex = DirCache.newInCore();
+        final DirCacheEditor editor = inCoreIndex.editor();
+
+        try {
+            if ( headId != null ) {
+                final TreeWalk treeWalk = new TreeWalk( git.getRepository() );
+                final int hIdx = treeWalk.addTree( new RevWalk( git.getRepository() ).parseTree( headId ) );
+                treeWalk.setRecursive( true );
+
+                while ( treeWalk.next() ) {
+                    final String walkPath = treeWalk.getPathString();
+                    final CanonicalTreeParser hTree = treeWalk.getTree( hIdx, CanonicalTreeParser.class );
+
+                    final String toPath = content.get( walkPath );
+
+                    final DirCacheEntry dcEntry = new DirCacheEntry( walkPath );
+                    final ObjectId _objectId = hTree.getEntryObjectId();
+                    final FileMode _fileMode = hTree.getEntryFileMode();
+
+                    // add to temporary in-core index
+                    editor.add( new DirCacheEditor.PathEdit( dcEntry ) {
+                        @Override
+                        public void apply( final DirCacheEntry ent ) {
+                            ent.setObjectId( _objectId );
+                            ent.setFileMode( _fileMode );
+                        }
+                    } );
+
+                    if ( toPath != null ) {
+                        final DirCacheEntry newdcEntry = new DirCacheEntry( toPath );
+                        final ObjectId newObjectId = hTree.getEntryObjectId();
+                        final FileMode newFileMode = hTree.getEntryFileMode();
+
+                        editor.add( new DirCacheEditor.PathEdit( newdcEntry ) {
+                            @Override
+                            public void apply( final DirCacheEntry ent ) {
+                                ent.setFileMode( newFileMode );
+                                ent.setObjectId( newObjectId );
+                            }
+                        } );
+                    }
+                }
+                treeWalk.release();
+            }
+
+            editor.finish();
+        } catch ( final Exception e ) {
+            throw new RuntimeException( e );
+        }
+
+        return inCoreIndex;
+    }
+
+    private static DirCache createTemporaryIndex( final Git git,
+                                                  final ObjectId headId ) {
+
+        final DirCache inCoreIndex = DirCache.newInCore();
+        final DirCacheEditor editor = inCoreIndex.editor();
+
+        try {
+            if ( headId != null ) {
+                final TreeWalk treeWalk = new TreeWalk( git.getRepository() );
+                final int hIdx = treeWalk.addTree( new RevWalk( git.getRepository() ).parseTree( headId ) );
+                treeWalk.setRecursive( true );
+
+                while ( treeWalk.next() ) {
+                    final String walkPath = treeWalk.getPathString();
+                    final CanonicalTreeParser hTree = treeWalk.getTree( hIdx, CanonicalTreeParser.class );
+
+                    final DirCacheEntry dcEntry = new DirCacheEntry( walkPath );
+                    final ObjectId _objectId = hTree.getEntryObjectId();
+                    final FileMode _fileMode = hTree.getEntryFileMode();
+
+                    // add to temporary in-core index
+                    editor.add( new DirCacheEditor.PathEdit( dcEntry ) {
+                        @Override
+                        public void apply( final DirCacheEntry ent ) {
+                            ent.setObjectId( _objectId );
+                            ent.setFileMode( _fileMode );
+                        }
+                    } );
+                }
+                treeWalk.release();
+            }
+
+            editor.finish();
+        } catch ( final Exception e ) {
+            throw new RuntimeException( e );
+        }
+
+        return inCoreIndex;
+    }
+
     public static ObjectId resolveObjectId( final Git git,
                                             final String name ) {
 
@@ -640,12 +840,12 @@ public final class JGitUtil {
 
                         @Override
                         public String author() {
-                            return commit.getCommitterIdent().getName();
+                            return commit.getAuthorIdent().getName();
                         }
 
                         @Override
                         public String email() {
-                            return commit.getCommitterIdent().getEmailAddress();
+                            return commit.getAuthorIdent().getEmailAddress();
                         }
 
                         @Override
@@ -655,7 +855,7 @@ public final class JGitUtil {
 
                         @Override
                         public Date date() {
-                            return commit.getCommitterIdent().getWhen();
+                            return commit.getAuthorIdent().getWhen();
                         }
 
                         @Override

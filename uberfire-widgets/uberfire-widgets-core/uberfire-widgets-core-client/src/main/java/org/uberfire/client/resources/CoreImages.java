@@ -45,4 +45,7 @@ public interface CoreImages
     @Source("images/tick.png")
     ImageResource tick();
 
+    @Source("images/BPM_FileIcons_text.png")
+    ImageResource typeTextFile();
+
 }
