@@ -71,6 +71,7 @@
     <bootstrap.version>2.2.1.0</bootstrap.version>
     <gwt-dnd.version>3.1.2</gwt-dnd.version>
     <gchart.version>2.6</gchart.version>
+    <guava.version>13.0.1</guava.version>
 
     <jasypt.version>1.9.0</jasypt.version>
     <jacc.version>1.4</jacc.version>
@@ -448,6 +449,18 @@
         <groupId>com.allen-sauer.gwt.dnd</groupId>
         <artifactId>gwt-dnd</artifactId>
         <version>${gwt-dnd.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-gwt</artifactId>
+        <version>${guava.version}</version>
       </dependency>
 
       <dependency>
