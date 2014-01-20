@@ -48,6 +48,11 @@
       <artifactId>uberfire-commons</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-annotations</artifactId>
+    </dependency>
+
     <!-- Errai Core -->
     <dependency>
       <groupId>org.jboss.errai</groupId>

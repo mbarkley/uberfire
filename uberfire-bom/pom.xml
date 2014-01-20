@@ -40,6 +40,13 @@
         <type>war</type>
       </dependency>
 
+      <!-- Core shared API -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-annotations</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- Server -->
       <dependency>
         <groupId>org.uberfire</groupId>
@@ -182,6 +189,11 @@
         <artifactId>uberfire-workbench</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-workbench-annotation-processors</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- JS Native Plugins -->

@@ -25,69 +25,24 @@
     <relativePath>../uberfire-parent-with-dependencies/pom.xml</relativePath>
   </parent>
 
-  <artifactId>uberfire-workbench</artifactId>
+  <artifactId>uberfire-workbench-annotations</artifactId>
   <packaging>jar</packaging>
 
-  <name>UberFire Workbench</name>
-  <description>UberFire Workbench</description>
+  <name>UberFire Workbench Annotations</name>
+  <description>UberFire Workbench Annotations and their Processors</description>
 
   <dependencies>
 
-    <dependency>
-      <groupId>com.github.gwtbootstrap</groupId>
-      <artifactId>gwt-bootstrap</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-client-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-widgets-commons</artifactId>
-    </dependency>
-
-    <!-- Annotations -->
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <scope>provided</scope>
     </dependency>
 
-    <!-- CDI Integration Modules -->
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-cdi-client</artifactId>
-    </dependency>
-
-    <!-- Errai IoC -->
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-ioc</artifactId>
-    </dependency>
-
-    <!-- GWT and GWT Extensions -->
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.allen-sauer.gwt.dnd</groupId>
-      <artifactId>gwt-dnd</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava-gwt</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -100,6 +55,16 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-api</artifactId>
     </dependency>
 
   </dependencies>
