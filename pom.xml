@@ -655,6 +655,7 @@
     <module>uberfire-build-config</module>
     <module>uberfire-bom</module>
     <module>uberfire-parent-with-dependencies</module>
+    <module>uberfire-annotations</module>
     <module>uberfire-commons</module>
     <module>uberfire-security</module>
     <module>uberfire-nio2-backport</module>
@@ -664,6 +665,7 @@
     <module>uberfire-server</module>
     <module>uberfire-client-api</module>
     <module>uberfire-workbench</module>
+    <module>uberfire-workbench-annotation-processors</module>
     <module>uberfire-backend</module>
     <module>uberfire-widgets</module>
     <module>uberfire-js</module>
