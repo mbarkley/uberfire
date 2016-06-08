@@ -212,7 +212,7 @@ public class WildflyUserPropertiesManager extends BaseWildflyPropertiesManager i
             throw new RuntimeException("Properties file for users not found at '" + usersFilePath + "'.");
         }
 
-        this.usersFileLoader = new UserPropertiesFileLoader(usersFile.getAbsolutePath());
+        this.usersFileLoader = new UserPropertiesFileLoader(usersFile.getAbsolutePath(), null);
         try {
             this.usersFileLoader.start(null);
         } catch (Exception e) {
