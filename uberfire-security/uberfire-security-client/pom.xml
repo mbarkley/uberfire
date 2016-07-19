@@ -61,6 +61,12 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish</groupId>
+          <artifactId>javax.el</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- GWT and GWT Extensions -->
