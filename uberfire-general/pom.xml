@@ -12,5 +12,6 @@
    <module>uberfire-general-api</module>
    <module>uberfire-general-client</module>
    <module>uberfire-general-backend</module>
+   <module>uberfire-general-compile</module>
   </modules>
 </project>
