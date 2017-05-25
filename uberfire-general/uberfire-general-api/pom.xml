@@ -20,6 +20,10 @@
       <artifactId>javax.inject</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.spec.javax.interceptor</groupId>
+      <artifactId>jboss-interceptors-api_1.2_spec</artifactId>
+    </dependency>
     <!-- EJB for AsyncExecutorService -->
     <dependency>
       <groupId>org.jboss.spec.javax.ejb</groupId>
@@ -54,6 +58,10 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-bus</artifactId>
     </dependency>
 
     <dependency>
