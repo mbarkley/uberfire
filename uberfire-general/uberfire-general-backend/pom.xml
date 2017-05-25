@@ -13,5 +13,10 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-general-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
   </dependencies>
 </project>
