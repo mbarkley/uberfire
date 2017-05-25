@@ -650,6 +650,10 @@
     <module>uberfire-preferences</module>
     <module>uberfire-extensions</module>
     <module>uberfire-showcase</module>
+    <module>uberfire-general</module>
+    <module>uberfire-runtime</module>
+    <module>uberfire-authoring</module>
+    <module>uberfire-management</module>
   </modules>
 
   <dependencyManagement>

@@ -89,6 +89,154 @@
         Each module should declare it's direct dependencies and possibly overwrite scope/optional.
         Always declare the sources jar too and optionally the test-jar.
       -->
+      <!-- General -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-general-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-general-api</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-general-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-general-client</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-general-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-general-backend</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!-- Management -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-management-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-management-api</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-management-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-management-client</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-management-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-management-backend</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!-- Authoring -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-authoring-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-authoring-api</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-authoring-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-authoring-client</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-authoring-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-authoring-backend</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!-- Runtime -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-runtime-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-runtime-api</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-runtime-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-runtime-client</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-runtime-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-runtime-backend</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!-- Showcase WebApp -->
       <dependency>
         <groupId>org.uberfire</groupId>
