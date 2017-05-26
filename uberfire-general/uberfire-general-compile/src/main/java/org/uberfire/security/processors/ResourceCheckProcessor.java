@@ -23,6 +23,7 @@ import org.jboss.errai.codegen.builder.ElseBlockBuilder;
 import org.jboss.errai.codegen.builder.StatementEnd;
 import org.jboss.errai.codegen.builder.impl.BooleanExpressionBuilder;
 import org.jboss.errai.codegen.meta.MetaClass;
+import org.jboss.errai.codegen.meta.MetaClassFactory;
 import org.jboss.errai.codegen.meta.MetaMethod;
 import org.jboss.errai.codegen.meta.MetaParameter;
 import org.jboss.errai.codegen.util.If;
@@ -33,7 +34,6 @@ import org.jboss.errai.ioc.rebind.ioc.injector.api.Decorable;
 import org.jboss.errai.ioc.rebind.ioc.injector.api.FactoryController;
 import org.uberfire.security.Resource;
 import org.uberfire.security.annotations.ResourceCheck;
-import org.uberfire.security.client.authz.AuthorizationManagerHelper;
 
 /**
  * <p>Given a method where "project" creation permissions are required like, for instance:</p>
@@ -145,7 +145,7 @@ public class ResourceCheckProcessor extends IOCDecoratorExtension<ResourceCheck>
                                                String resourceAction,
                                                String onGranted,
                                                String onDenied) {
-        return buildCheckStatement(Stmt.invokeStatic(AuthorizationManagerHelper.class,
+        return buildCheckStatement(Stmt.invokeStatic(MetaClassFactory.get( "org.uberfire.security.client.authz.AuthorizationManagerHelper" ),
                                                      "authorize",
                                                      Stmt.loadVariable(resourceName),
                                                      resourceAction),
@@ -157,7 +157,7 @@ public class ResourceCheckProcessor extends IOCDecoratorExtension<ResourceCheck>
                                              String resourceAction,
                                              String onGranted,
                                              String onDenied) {
-        return buildCheckStatement(Stmt.invokeStatic(AuthorizationManagerHelper.class,
+        return buildCheckStatement(Stmt.invokeStatic(MetaClassFactory.get( "org.uberfire.security.client.authz.AuthorizationManagerHelper" ),
                                                      "authorize",
                                                      resourceType,
                                                      resourceAction),

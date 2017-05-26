@@ -16,6 +16,7 @@
 package org.uberfire.security.processors;
 
 import org.jboss.errai.codegen.Statement;
+import org.jboss.errai.codegen.meta.MetaClassFactory;
 import org.jboss.errai.codegen.meta.MetaMethod;
 import org.jboss.errai.codegen.util.Stmt;
 import org.jboss.errai.ioc.client.api.CodeDecorator;
@@ -23,7 +24,6 @@ import org.jboss.errai.ioc.rebind.ioc.extension.IOCDecoratorExtension;
 import org.jboss.errai.ioc.rebind.ioc.injector.api.Decorable;
 import org.jboss.errai.ioc.rebind.ioc.injector.api.FactoryController;
 import org.uberfire.security.annotations.PermissionCheck;
-import org.uberfire.security.client.authz.AuthorizationManagerHelper;
 
 /**
  * <p>Given a method where a specific permission is required like, for instance:</p>
@@ -77,7 +77,7 @@ public class PermissionCheckProcessor extends IOCDecoratorExtension<PermissionCh
                                            String onGranted,
                                            String onDenied) {
         return ResourceCheckProcessor.buildCheckStatement(
-                Stmt.invokeStatic(AuthorizationManagerHelper.class,
+                Stmt.invokeStatic(MetaClassFactory.get( "org.uberfire.security.client.authz.AuthorizationManagerHelper" ),
                                   "authorize",
                                   permission),
                 onGranted,
