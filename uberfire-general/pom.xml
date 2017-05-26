@@ -13,5 +13,6 @@
    <module>uberfire-general-client</module>
    <module>uberfire-general-backend</module>
    <module>uberfire-general-compile</module>
+   <module>uberfire-general-compile-tests</module>
   </modules>
 </project>
