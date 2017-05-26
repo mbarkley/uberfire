@@ -14,6 +14,6 @@
 # limitations under the License.
 #
 
-org.uberfire.java.nio.fs.file.SimpleFileSystemProvider
-org.uberfire.backend.server.security.MockSecuredFilesystemProvider
-org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider
+org.uberfire.backend.server.security.adapter.JettyGroupsAdapter
+org.uberfire.backend.server.security.adapter.WeblogicGroupsAdapter
+org.uberfire.backend.server.security.adapter.WebSphereGroupsAdapter

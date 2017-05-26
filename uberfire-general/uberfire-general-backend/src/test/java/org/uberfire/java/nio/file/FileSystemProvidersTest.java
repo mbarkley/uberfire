@@ -29,7 +29,7 @@ public class FileSystemProvidersTest {
 
     @Test
     public void generalTests() {
-        assertThat(FileSystemProviders.installedProviders()).isNotNull().isNotEmpty().hasSize(2);
+        assertThat(FileSystemProviders.installedProviders()).isNotNull().isNotEmpty().hasSize(3);
         assertThat(FileSystemProviders.getDefaultProvider()).isNotNull().isInstanceOf(SimpleFileSystemProvider.class);
 
         assertThat(FileSystemProviders.resolveProvider(URI.create("default:///"))).isNotNull().isInstanceOf(SimpleFileSystemProvider.class);

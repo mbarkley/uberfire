@@ -85,12 +85,43 @@
     </dependency>
 
     <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
       <artifactId>jboss-servlet-api_3.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
 
+    <!-- Formatting -->
+    <dependency>
+      <groupId>org.ocpsoft.prettytime</groupId>
+      <artifactId>prettytime</artifactId>
+    </dependency>
+
+    <!-- XML parsing -->
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+    </dependency>
+
+    <!-- Workbench serialization -->
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+    </dependency>
+
+    <!-- Encryption\Decryption service-->
+    <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt</artifactId>
+    </dependency>
+
     <!-- Errai -->
+    <!-- TODO Some of these should be provided or replaced by errai-api -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ioc</artifactId>
@@ -106,6 +137,10 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-marshalling</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-cdi-server</artifactId>
     </dependency>
 
     <dependency>
@@ -171,6 +206,16 @@
           <artifactId>javax.servlet-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
