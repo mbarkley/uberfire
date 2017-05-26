@@ -20,6 +20,11 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-general-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-general-api</artifactId>
     </dependency>
 
@@ -35,6 +40,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-general-backend</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <scope>test</scope>
@@ -46,16 +57,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <proc>none</proc>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
