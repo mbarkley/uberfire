@@ -25,15 +25,18 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ioc</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-client</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.allen-sauer.gwt.dnd</groupId>
+      <artifactId>gwt-dnd</artifactId>
     </dependency>
 
     <!-- GWT and GWT Extensions -->
@@ -41,6 +44,18 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt.gwtmockito</groupId>
+      <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- For testing utils -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-general-backend</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
