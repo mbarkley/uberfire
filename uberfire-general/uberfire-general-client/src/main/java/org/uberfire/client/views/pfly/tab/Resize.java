@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.workbench.widgets.dnd;
+package org.uberfire.client.views.pfly.tab;
 
-import javax.enterprise.inject.Alternative;
+import java.lang.annotation.Retention;
+import javax.inject.Qualifier;
 
-import org.uberfire.client.workbench.BeanFactory;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Alternative
-public class WorkbenchDragAndDropManagerUnitTestWrapper extends WorkbenchDragAndDropManager {
+@Qualifier
+@Retention(RUNTIME)
+public @interface Resize {
 
-    public void setupMocks(WorkbenchPickupDragController dragController,
-                           BeanFactory factory) {
-        this.dragController = dragController;
-        this.factory = factory;
-    }
 }

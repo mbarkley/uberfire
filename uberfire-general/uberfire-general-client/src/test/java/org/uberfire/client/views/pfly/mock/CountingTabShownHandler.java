@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.workbench.widgets.dnd;
+package org.uberfire.client.views.pfly.mock;
 
-import javax.enterprise.inject.Alternative;
+import org.gwtbootstrap3.client.shared.event.TabShownEvent;
+import org.gwtbootstrap3.client.shared.event.TabShownHandler;
 
-import org.uberfire.client.workbench.BeanFactory;
+public class CountingTabShownHandler implements TabShownHandler {
 
-@Alternative
-public class WorkbenchDragAndDropManagerUnitTestWrapper extends WorkbenchDragAndDropManager {
+    private int eventCount;
 
-    public void setupMocks(WorkbenchPickupDragController dragController,
-                           BeanFactory factory) {
-        this.dragController = dragController;
-        this.factory = factory;
+    @Override
+    public void onShown(TabShownEvent event) {
+        this.eventCount++;
+    }
+
+    public int getEventCount() {
+        return eventCount;
     }
 }

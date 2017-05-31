@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.workbench.widgets.dnd;
+package org.uberfire.client.views.pfly.sys;
 
-import javax.enterprise.inject.Alternative;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 
-import org.uberfire.client.workbench.BeanFactory;
+public interface PatternFlyClientBundle extends ClientBundle {
 
-@Alternative
-public class WorkbenchDragAndDropManagerUnitTestWrapper extends WorkbenchDragAndDropManager {
+    PatternFlyClientBundle INSTANCE = GWT.create(PatternFlyClientBundle.class);
 
-    public void setupMocks(WorkbenchPickupDragController dragController,
-                           BeanFactory factory) {
-        this.dragController = dragController;
-        this.factory = factory;
-    }
+    @Source("org/uberfire/client/views/static/prettify/bin/prettify.min.js")
+    TextResource prettify();
+
+    @Source("org/uberfire/client/views/static/bootstrap-select/js/bootstrap-select.min.js")
+    TextResource bootstrapSelect();
+
 }

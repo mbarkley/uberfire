@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.workbench.widgets.dnd;
+package org.uberfire.client.views.pfly.menu;
 
-import javax.enterprise.inject.Alternative;
+import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.NavbarBrand;
 
-import org.uberfire.client.workbench.BeanFactory;
+/**
+ * Denotes that the target class or producer of type {@link NavbarBrand} provides the main branding link that appears above
+ * the application's menu bar. Each application that uses PatternFly should have one such type or producer.
+ * <p>
+ * To fit with the overall layout, <b>the NavbarBrand widget that bears this qualifier must have a height of 25px.</b>
+ */
+public interface MainBrand extends IsWidget {
 
-@Alternative
-public class WorkbenchDragAndDropManagerUnitTestWrapper extends WorkbenchDragAndDropManager {
-
-    public void setupMocks(WorkbenchPickupDragController dragController,
-                           BeanFactory factory) {
-        this.dragController = dragController;
-        this.factory = factory;
-    }
 }

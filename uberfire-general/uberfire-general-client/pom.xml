@@ -38,6 +38,10 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ui</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.allen-sauer.gwt.dnd</groupId>
@@ -49,6 +53,10 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3</artifactId>
     </dependency>
 
     <dependency>
@@ -62,5 +70,177 @@
       <artifactId>uberfire-general-backend</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-cdi-client</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-general-api</artifactId>
+      <classifier>sources</classifier>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-patternfly</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>patternfly</artifactId>
+                  <version>${version.org.webjars.bower.org.patternfly}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/patternfly</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-prettify</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>google-code-prettify</artifactId>
+                  <version>${version.org.webjars.bower.google-code-prettify}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/prettify</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-bootstrap-select</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.bower</groupId>
+                  <artifactId>bootstrap-select</artifactId>
+                  <version>${version.org.webjars.bower.bootstrap-select}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/bootstrap-select</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-patternfly-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/client/views/static</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/patternfly/META-INF/resources/webjars/patternfly/${version.org.webjars.bower.org.patternfly}/dist</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>tests/**</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-prettify-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/client/views/static/prettify</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/prettify/META-INF/resources/webjars/google-code-prettify/${version.org.webjars.bower.google-code-prettify}</directory>
+                  <includes>
+                    <include>bin/**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-bootstrap-select-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/client/views/static/bootstrap-select</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/bootstrap-select/META-INF/resources/webjars/bootstrap-select/${version.org.webjars.bower.bootstrap-select}/dist</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${basedir}/${profile.testOutputDirectory}/</additionalClasspathElement>
+            <additionalClasspathElement>${basedir}/src/main/java/</additionalClasspathElement>
+            <additionalClasspathElement>${basedir}/src/main/resources/</additionalClasspathElement>
+            <additionalClasspathElement>${basedir}/src/test/java/</additionalClasspathElement>
+          </additionalClasspathElements>
+          <useManifestOnlyJar>false</useManifestOnlyJar>
+          <forkMode>pertest</forkMode>
+          <argLine>-Xmx1500m -Derrai.devel.nocache=true -Dgwt.args='-testBeginTimeout 5' -Derrai.hosted_mode_testing=true -Dorg.jboss.errai.bus.do_long_poll=false</argLine>
+          <systemProperties>
+            <!-- Must disable long polling for automated tests to succeed -->
+            <property>
+              <name>errai.hosted_mode_testing</name>
+              <value>true</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
