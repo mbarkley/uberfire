@@ -3,5 +3,6 @@
   <scan>
     <exclude name="org.uberfire.client.**"/>
     <exclude name="org.uberfire.security.client.**"/>
+    <exclude name="org.uberfire.ext.widgets.table.client.**"/>
   </scan>
 </beans>
