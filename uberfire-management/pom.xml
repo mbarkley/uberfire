@@ -12,5 +12,8 @@
    <module>uberfire-management-api</module>
    <module>uberfire-management-client</module>
    <module>uberfire-management-backend</module>
+   <module>uberfire-management-wildfly</module>
+   <module>uberfire-management-tomcat</module>
+   <module>uberfire-management-keycloak</module>
   </modules>
 </project>
