@@ -190,6 +190,23 @@
                            and there is very little chance this will get ever fixed. -->
                       <ignoreClass>org.w3c.dom.ElementTraversal</ignoreClass>
                       <ignoreClass>org.w3c.dom.UserDataHandler</ignoreClass>
+                      <!-- Duplicated classes in jakarta-regexp:jakarta-regexp:1.4 and xalan:xalan:2.7.1-->
+                      <ignoreClass>org.apache.regexp.ReaderCharacterIterator</ignoreClass>
+                      <ignoreClass>org.apache.regexp.REDebugCompiler</ignoreClass>
+                      <ignoreClass>org.apache.regexp.REDemo</ignoreClass>
+                      <ignoreClass>org.apache.regexp.RETest</ignoreClass>
+                      <ignoreClass>org.apache.regexp.REUtil</ignoreClass>
+                      <ignoreClass>org.apache.regexp.RESyntaxException</ignoreClass>
+                      <ignoreClass>org.apache.regexp.REDemo$1</ignoreClass>
+                      <ignoreClass>org.apache.regexp.RECompiler$RERange</ignoreClass>
+                      <ignoreClass>org.apache.regexp.StreamCharacterIterator</ignoreClass>
+                      <ignoreClass>org.apache.regexp.RECompiler</ignoreClass>
+                      <ignoreClass>org.apache.regexp.StringCharacterIterator</ignoreClass>
+                      <ignoreClass>org.apache.regexp.CharacterIterator</ignoreClass>
+                      <ignoreClass>org.apache.regexp.recompile</ignoreClass>
+                      <ignoreClass>org.apache.regexp.CharacterArrayCharacterIterator</ignoreClass>
+                      <ignoreClass>org.apache.regexp.REProgram</ignoreClass>
+                      <ignoreClass>org.apache.regexp.RE</ignoreClass>
                     </ignoreClasses>
                     <dependencies>
                       <!-- gwt-user bundles javax.servlet classes which usually conflicts with the servlet dependencies
