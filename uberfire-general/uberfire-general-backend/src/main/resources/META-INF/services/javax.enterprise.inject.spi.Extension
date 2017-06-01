@@ -1,2 +1,3 @@
 org.uberfire.backend.server.cdi.SystemConfigProducer
 org.uberfire.backend.server.cdi.workspace.WorkspaceScopedExtension
+org.uberfire.ext.security.server.HttpServletRequestProducerExtension
