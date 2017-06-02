@@ -6,5 +6,6 @@
     <exclude name="org.uberfire.ext.widgets.table.client.**"/>
     <exclude name="org.uberfire.ext.widgets.common.client.**"/>
     <exclude name="org.uberfire.ext.properties.editor.client.**"/>
+    <exclude name="org.uberfire.ext.widgets.core.client.**"/>
   </scan>
 </beans>
