@@ -9,6 +9,13 @@
   <name>UberFire Authoring Client</name>
 
   <dependencies>
+    <!-- Must be first to get right version of CDI Event interface.
+         (Wrong version might come from Errai?) -->
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-general-api</artifactId>
@@ -20,6 +27,53 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-authoring-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ioc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt.gwtmockito</groupId>
+      <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- For testing-utils -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-general-backend</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
