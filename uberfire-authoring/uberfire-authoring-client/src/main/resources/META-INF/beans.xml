@@ -8,5 +8,6 @@
     <exclude name="org.uberfire.ext.wires.core.scratchpad.client.**"/>
     <exclude name="org.uberfire.ext.wires.core.trees.client.**"/>
     <exclude name="org.uberfire.ext.wires.core.grids.client.**"/>
+    <exclude name="org.uberfire.ext.wires.bayesian.network.client.**"/>
   </scan>
 </beans>
