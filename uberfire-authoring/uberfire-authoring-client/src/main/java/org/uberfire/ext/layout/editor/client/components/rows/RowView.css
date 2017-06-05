@@ -1,0 +1,33 @@
+.rowDropPreview {
+    background-color: rgba(204, 204, 204, 0.5);
+    height: 20px !important;
+}
+
+.rowCss {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+}
+
+.rowCssMove {
+
+}
+
+.rowDndPreview {
+    opacity: 0.1;
+}
+
+.upper {
+    height: 10px;
+}
+
+.bottom {
+    height: 5px;
+
+}
+
+.rowMovePreview {
+    background-color: rgba(204, 204, 204, 0.5);
+    cursor: move;
+}
