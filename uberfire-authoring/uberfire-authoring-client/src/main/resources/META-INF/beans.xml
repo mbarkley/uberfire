@@ -4,5 +4,6 @@
   <scan>
     <exclude name="org.uberfire.ext.editor.commons.client.**"/>
     <exclude name="org.uberfire.ext.plugin.client.**"/>
+    <exclude name="org.uberfire.ext.wires.core.client.**"/>
   </scan>
 </beans>
