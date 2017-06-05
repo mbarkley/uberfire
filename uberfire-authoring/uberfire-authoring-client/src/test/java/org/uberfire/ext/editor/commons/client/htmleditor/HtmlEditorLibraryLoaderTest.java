@@ -18,9 +18,13 @@ package org.uberfire.ext.editor.commons.client.htmleditor;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
 
 import static org.mockito.Mockito.*;
 
+@RunWith(LienzoMockitoTestRunner.class)
 public class HtmlEditorLibraryLoaderTest {
 
     private HtmlEditorLibraryLoader loader;

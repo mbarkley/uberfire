@@ -22,12 +22,14 @@ import java.util.List;
 import javax.enterprise.event.Event;
 import javax.enterprise.util.TypeLiteral;
 
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
 import com.google.gwt.view.client.AsyncDataProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.history.event.VersionSelectedEvent;
@@ -37,13 +39,14 @@ import org.uberfire.java.nio.base.version.VersionRecord;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+@RunWith(LienzoMockitoTestRunner.class)
 public class VersionHistoryPresenterTest {
 
     private VersionHistoryPresenterView view;
     private VersionHistoryPresenterView.Presenter presenter;
     private VersionService service;
     private VersionHistoryPresenter screen;
-    private List<VersionRecord> records = new ArrayList<VersionRecord>();
+    private List<VersionRecord> records = new ArrayList<>();
     private VersionHistoryPresenterTest.VersionSelectedEventMock event;
     private Path path111;
     private Path path222;
@@ -171,15 +174,18 @@ public class VersionHistoryPresenterTest {
         private VersionServiceMock() {
 
             service = new VersionService() {
+                @Override
                 public List<VersionRecord> getVersions(final Path path) {
                     callback.callback(records);
                     return null;
                 }
 
+                @Override
                 public Path getPathToPreviousVersion(String uri) {
                     return null;
                 }
 
+                @Override
                 public Path restore(final Path path,
                                     final String comment) {
                     return null;

@@ -21,14 +21,18 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.uberfire.client.mvp.ActivityBeansInfo;
 import org.uberfire.ext.plugin.event.NewPluginRegistered;
 import org.uberfire.ext.plugin.event.PluginUnregistered;
 import org.uberfire.ext.plugin.model.PluginType;
 
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
+
 import static org.jgroups.util.Util.assertEquals;
 import static org.mockito.Mockito.*;
 
+@RunWith(LienzoMockitoTestRunner.class)
 public class ScreenLayoutDragComponentTest {
 
     private ScreenLayoutDragComponent screenLayoutDragComponent;
@@ -41,7 +45,7 @@ public class ScreenLayoutDragComponentTest {
 
         activityBeansInfo = spy(new ActivityBeansInfo());
 
-        List<String> availableWorkbenchScreensIds = new ArrayList<String>();
+        List<String> availableWorkbenchScreensIds = new ArrayList<>();
         availableWorkbenchScreensIds.add("screen1");
         availableWorkbenchScreensIds.add("screen2");
         availableWorkbenchScreensIds.add("screen3");

@@ -32,9 +32,11 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
 
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
+
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(LienzoMockitoTestRunner.class)
 public class NewPluginPopUpTest {
 
     private PluginNameValidator successValidator;
@@ -67,7 +69,7 @@ public class NewPluginPopUpTest {
             }
         };
 
-        pluginServicesCaller = new CallerMock<PluginServices>(pluginServices);
+        pluginServicesCaller = new CallerMock<>(pluginServices);
         presenter.pluginServices = pluginServicesCaller;
         presenter.placeManager = placeManager;
 

@@ -16,13 +16,15 @@
 
 package org.uberfire.ext.editor.commons.client.file.popups;
 
-import com.google.gwtmockito.WithClassesToStub;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.ext.editor.commons.client.file.RestoreUtil;
 import org.uberfire.ext.editor.commons.client.file.popups.commons.ToggleCommentPresenter;
@@ -33,9 +35,10 @@ import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.ParameterizedCommand;
 
-import static org.mockito.Mockito.*;
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
+import com.google.gwtmockito.WithClassesToStub;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(LienzoMockitoTestRunner.class)
 @WithClassesToStub({CommonConstants.class, ObservablePath.class})
 public class RestorePopUpPresenterTest {
 

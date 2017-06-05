@@ -18,12 +18,16 @@ package org.uberfire.ext.plugin.client.perspective.editor.layout.editor.popups;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.uberfire.ext.editor.commons.client.htmleditor.HtmlEditorPresenter;
 import org.uberfire.ext.layout.editor.client.api.ModalConfigurationContext;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
 
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
+
 import static org.mockito.Mockito.*;
 
+@RunWith(LienzoMockitoTestRunner.class)
 public class EditHTMLPresenterTest {
 
     public static final String DEFAULT_CONTENT = "default content";

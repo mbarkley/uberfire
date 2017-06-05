@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.mvp.ActivityBeansInfo;
@@ -38,9 +39,12 @@ import org.uberfire.ext.plugin.model.Activity;
 import org.uberfire.ext.plugin.model.Plugin;
 import org.uberfire.ext.plugin.model.PluginType;
 
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+@RunWith(LienzoMockitoTestRunner.class)
 public class PluginsInfoTest {
 
     private PluginsInfo pluginsInfo;
@@ -108,7 +112,7 @@ public class PluginsInfoTest {
     }
 
     private Set<Plugin> getPlugins() {
-        Set<Plugin> plugins = new HashSet<Plugin>();
+        Set<Plugin> plugins = new HashSet<>();
         plugins.add(new Plugin("existingPerspectiveLayout",
                                PluginType.PERSPECTIVE_LAYOUT,
                                PathFactory.newPath("test1",
