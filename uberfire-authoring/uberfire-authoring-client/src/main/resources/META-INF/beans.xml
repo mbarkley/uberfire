@@ -6,5 +6,6 @@
     <exclude name="org.uberfire.ext.plugin.client.**"/>
     <exclude name="org.uberfire.ext.wires.core.client.**"/>
     <exclude name="org.uberfire.ext.wires.core.scratchpad.client.**"/>
+    <exclude name="org.uberfire.ext.wires.core.trees.client.**"/>
   </scan>
 </beans>
