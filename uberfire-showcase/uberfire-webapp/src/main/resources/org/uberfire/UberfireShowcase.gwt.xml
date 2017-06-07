@@ -28,6 +28,25 @@
   <!-- Social dependencies -->
   <inherits name="org.ext.uberfire.social.activities.SocialActivitiesAPI"/>
   <inherits name="org.ext.uberfire.social.activities.SocialActivitiesClient"/>
+  
+  <!-- For apples-to-apples compile-time comparison -->
+  <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementAPI"/>
+  <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementClient"/>
+  <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementWorkbench"/>
+  <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementWidgets"/>
+  <inherits name="org.uberfire.ext.widgets.sandbox.UberfireMarkdownWidget"/>
+  <inherits name="org.uberfire.ext.wires.bayesian.network.BayesianNetworkClient"/>
+  <inherits name="org.uberfire.ext.wires.bayesian.network.parser.BayesianNetworkAPI"/>
+  <inherits name="org.uberfire.ext.wires.bpmn.WiresBpmnApi"/>
+  <inherits name="org.uberfire.ext.wires.bpmn.WiresBpmnClient"/>
+  <inherits name="org.uberfire.ext.wires.core.WiresCoreApi"/>
+  <inherits name="org.uberfire.ext.wires.core.WiresCoreClient"/>
+  <inherits name="org.uberfire.ext.wires.core.grids.WiresCoreGrids"/>
+  <inherits name="org.uberfire.ext.wires.core.scratchpad.WiresCoreScratchPad"/>
+  <inherits name="org.uberfire.ext.wires.core.trees.WiresCoreTrees"/>
+
+  <!-- TODO Fix js/showdown.js so this isn't necessary -->
+  <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css'/>
