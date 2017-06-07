@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
 <!--
   ~ Copyright 2015 JBoss, by Red Hat, Inc
   ~
@@ -14,12 +16,20 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:md="urn:import:org.uberfire.ext.widgets.sandbox.client.markdown">
+<module>
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.editor.Editor" />
+  <inherits name="com.google.gwt.i18n.I18N"/>
 
-  <g:ResizeLayoutPanel>
-    <md:Markdown ui:field="markdown"/>
-  </g:ResizeLayoutPanel>
-</ui:UiBinder>
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
+
+  <inherits name="org.jboss.errai.bus.ErraiBus"/>
+  <inherits name="org.jboss.errai.ioc.Container"/>
+
+  <inherits name="org.uberfire.UberfireAuthoringAPI"/>
+  <inherits name="org.UberfireGeneralAPI"/>
+  <inherits name="org.UberfireGeneralClient"/>
+  
+  <source path="ext" />
+
+</module>

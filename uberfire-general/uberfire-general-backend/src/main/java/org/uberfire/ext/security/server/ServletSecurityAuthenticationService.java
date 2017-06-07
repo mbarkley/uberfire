@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
 import javax.servlet.ServletException;
@@ -37,6 +38,7 @@ import org.uberfire.backend.server.security.adapter.GroupAdapterAuthorizationSou
 
 @Service
 @ApplicationScoped
+@Alternative
 public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizationSource implements AuthenticationService {
 
     static final String USER_SESSION_ATTR_NAME = "uf.security.user";
@@ -121,7 +123,7 @@ public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizat
             user = (User) session.getAttribute(USER_SESSION_ATTR_NAME);
             if (user == null) {
                 // Use roles present in the registry.
-                final Collection<Role> userRoles = new HashSet<Role>();
+                final Collection<Role> userRoles = new HashSet<>();
                 for (final Role checkRole : RoleRegistry.get().getRegisteredRoles()) {
                     if (request.isUserInRole(checkRole.getName())) {
                         userRoles.add(checkRole);

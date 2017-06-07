@@ -18,4 +18,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/beans_1_2.xsd"
        bean-discovery-mode="all">
+  <scan>
+    <exclude name="org.uberfire.mocks.**"/>
+  </scan>
 </beans>

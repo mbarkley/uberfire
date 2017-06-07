@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015 JBoss, by Red Hat, Inc
+  ~ Copyright 2015 Red Hat, Inc. and/or its affiliates.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,12 +15,14 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:md="urn:import:org.uberfire.ext.widgets.sandbox.client.markdown">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN"
+        "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
+<module rename-to="org.uberfire.UberfireShowcase">
 
-  <g:ResizeLayoutPanel>
-    <md:Markdown ui:field="markdown"/>
-  </g:ResizeLayoutPanel>
-</ui:UiBinder>
+    <inherits name="org.uberfire.UberfireShowcase"/>
+
+    <set-property name="user.agent" value="safari,gecko1_8"/>
+    <set-property name="locale" value="default"/>
+
+    <collapse-all-properties/>
+</module>

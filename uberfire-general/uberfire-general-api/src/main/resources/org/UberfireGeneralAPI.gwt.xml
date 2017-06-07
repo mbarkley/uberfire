@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN"
+    "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
+<module>
+
+  <inherits name='org.jboss.errai.ioc.Container'/>
+  <inherits name='org.jboss.errai.bus.ErraiBus'/>
+  <inherits name="javax.enterprise.Support"/>
+  
+  <source path="uberfire">
+    <exclude name="**/*"/>
+  </source>
+  <source path='uberfire/annotations'/>
+  <source path='uberfire/debug'/>
+  <source path='uberfire/lifecycle'/>
+  <source path='uberfire/mvp'/>
+  <source path='uberfire/paging'/>
+  <source path='uberfire/plugin'/>
+  <source path='uberfire/rpc'/>
+  <source path='uberfire/security'/>
+  <source path='uberfire/workbench'/>
+  <source path='uberfire/client'/>
+  <source path='uberfire/backend'>
+    <exclude name="**/server/**"/>
+  </source>
+  <source path="uberfire/security">
+    <exclude name="**/server/impl/**" />
+  </source>
+  <source path='uberfire/preferences'/>
+  <source path='uberfire/java/nio/file'>
+    <include name="**/*Exception*"/>
+  </source>
+  <source path='uberfire/java/nio/base'>
+    <include name="**/version/VersionHistory*"/>
+    <include name="**/version/VersionRecord*"/>
+    <include name="**/FileDiff*"/>
+  </source>
+  <source path='uberfire/java/nio'>
+    <include name="**/*Exception*"/>
+  </source>
+  <source path="uberfire/ext">
+    <include name="properties/editor/**/*"/>
+    <include name="services/**/*"/>
+    <exclude name="metadata/**/*" />
+  </source>
+  <source path='uberfire/commons/data'/>
+  <source path='uberfire/commons/lifecycle'/>
+  <source path='uberfire/commons/uuid'/>
+  <source path='uberfire/commons/validation'>
+    <exclude name='**/Preconditions.java'/>
+  </source>
+
+  <source path='ext/uberfire/social/activities/model'/>
+  <source path='ext/uberfire/social/activities/service'/>
+  <source path='ext/uberfire/social/activities/events'/>
+  <source path='ext/uberfire/social/activities/utils'/>
+
+  <super-source path="uberfire/jre"/>
+
+</module>

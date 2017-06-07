@@ -32,6 +32,7 @@
   <modules>
     <module>uberfire-client-webapp</module>
     <module>uberfire-webapp</module>
+    <module>uberfire-webapp-reduced-mvn-modules</module>
     <module>showcase-distribution-wars</module>
   </modules>
 </project>
