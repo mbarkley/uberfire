@@ -23,35 +23,39 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Named;
 
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ActivityBeansInfoTest {
 
-    private SyncBeanManager syncBeanManager;
+    @Mock
+    private BeanDefProvider<WorkbenchScreenActivity> screenProvider;
 
+    @Mock
+    private BeanDefProvider<PerspectiveActivity> perspectiveProvider;
+
+    @Mock
+    private BeanDefProvider<SplashScreenActivity> splashScreenProvider;
+
+    @Mock
+    private BeanDefProvider<WorkbenchEditorActivity> editorProvider;
+
+    @InjectMocks
     private ActivityBeansInfo activityBeansInfo;
-
-    @Before
-    public void setup() {
-        syncBeanManager = mock(SyncBeanManager.class);
-        activityBeansInfo = new ActivityBeansInfo() {
-            @Override
-            public SyncBeanManager getBeanManager() {
-                return syncBeanManager;
-            }
-        };
-    }
 
     @Test
     public void getAvaliableWorkbenchScreensIdsTest() {
-        when(syncBeanManager.lookupBeans(WorkbenchScreenActivity.class))
-                .thenReturn(generateBeansList());
+        when(screenProvider.iterator())
+                .then(inv -> generateBeansList().iterator());
 
         assertEquals(4,
                      activityBeansInfo.getAvailableWorkbenchScreensIds().size());
@@ -67,7 +71,7 @@ public class ActivityBeansInfoTest {
     }
 
     private Collection<SyncBeanDef<WorkbenchScreenActivity>> generateBeansList() {
-        Collection<SyncBeanDef<WorkbenchScreenActivity>> beans = new ArrayList<SyncBeanDef<WorkbenchScreenActivity>>();
+        Collection<SyncBeanDef<WorkbenchScreenActivity>> beans = new ArrayList<>();
 
         beans.add(generateBeanDef("Z",
                                   true));
@@ -111,7 +115,7 @@ public class ActivityBeansInfoTest {
 
             @Override
             public Set<Annotation> getQualifiers() {
-                final HashSet<Annotation> annotations = new HashSet<Annotation>();
+                final HashSet<Annotation> annotations = new HashSet<>();
                 if (hasAnnotations) {
                     annotations.add(new Named() {
 

@@ -24,8 +24,8 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchActivity;
@@ -43,20 +43,20 @@ import org.uberfire.workbench.events.NotificationEvent;
 @ApplicationScoped
 public class NotificationManager {
 
-    private final Map<PlaceRequest, View> notificationsContainerViewMap = new HashMap<PlaceRequest, View>();
+    private final Map<PlaceRequest, View> notificationsContainerViewMap = new HashMap<>();
     private final PlaceRequest rootPlaceRequest = new DefaultPlaceRequest("org.uberfire.client.workbench.widgets.notifications.root");
-    private SyncBeanManager iocManager;
     private PlaceManager placeManager;
     private WorkbenchLayoutInfo workbenchLayoutInfo;
+    private ManagedInstance<View> viewProvider;
 
     public NotificationManager() {
     }
 
     @Inject
-    public NotificationManager(final SyncBeanManager iocManager,
+    public NotificationManager(final ManagedInstance<View> viewProvider,
                                final PlaceManager placeManager,
                                final WorkbenchLayoutInfo workbenchLayoutInfo) {
-        this.iocManager = iocManager;
+        this.viewProvider = viewProvider;
         this.placeManager = placeManager;
         this.workbenchLayoutInfo = workbenchLayoutInfo;
     }
@@ -83,23 +83,18 @@ public class NotificationManager {
         //Lookup, or create, a View specific to the container
         View notificationsContainerView = notificationsContainerViewMap.get(placeRequest);
         if (notificationsContainerView == null) {
-            final SyncBeanDef<View> containerViewBeanDef = iocManager.lookupBean(View.class);
-            if (containerViewBeanDef != null) {
-                notificationsContainerView = containerViewBeanDef.getInstance();
-                notificationsContainerView.setContainer(notificationsContainer);
+            // This will never return null.
+            notificationsContainerView = viewProvider.get();
+            notificationsContainerView.setContainer(notificationsContainer);
 
-                if (event.getInitialTopOffset() != null) {
-                    notificationsContainerView.setInitialSpacing(event.getInitialTopOffset());
-                } else {
-                    notificationsContainerView.setInitialSpacing(workbenchLayoutInfo.getHeaderHeight());
-                }
-
-                notificationsContainerViewMap.put(placeRequest,
-                                                  notificationsContainerView);
+            if (event.getInitialTopOffset() != null) {
+                notificationsContainerView.setInitialSpacing(event.getInitialTopOffset());
+            } else {
+                notificationsContainerView.setInitialSpacing(workbenchLayoutInfo.getHeaderHeight());
             }
-        }
-        if (notificationsContainerView == null) {
-            return;
+
+            notificationsContainerViewMap.put(placeRequest,
+                                              notificationsContainerView);
         }
 
         //Show notification in the container

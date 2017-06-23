@@ -20,9 +20,11 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.jboss.errai.ioc.client.container.IOC;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -34,16 +36,22 @@ import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @ApplicationScoped
 public class PerspectiveJSExporter implements UberfireJSExporter {
+    
+    @Inject
+    private ActivityBeansCache activityBeansCache;
+    
+    @Inject
+    private ManagedInstance<JSNativePerspective> nativePerspective;
+    
+    @Inject
+    private SyncBeanManager beanManager;
 
-    public static void registerPerspective(final Object _obj) {
+    public void registerPerspective(final Object _obj) {
         final JavaScriptObject obj = (JavaScriptObject) _obj;
 
         if (JSNativePlugin.hasStringProperty(obj,
                                              "id")) {
-            final SyncBeanManager beanManager = IOC.getBeanManager();
-            final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
-
-            final JSNativePerspective newNativePerspective = beanManager.lookupBean(JSNativePerspective.class).getInstance();
+            final JSNativePerspective newNativePerspective = nativePerspective.get();
             newNativePerspective.build(obj);
 
             final JSWorkbenchPerspectiveActivity activity = new JSWorkbenchPerspectiveActivity(newNativePerspective);
@@ -61,10 +69,10 @@ public class PerspectiveJSExporter implements UberfireJSExporter {
 
     @Override
     public void export() {
-        publish();
+        publish(this);
     }
 
-    private native void publish() /*-{
-        $wnd.$registerPerspective = @org.uberfire.client.exporter.PerspectiveJSExporter::registerPerspective(Ljava/lang/Object;);
+    private native void publish(PerspectiveJSExporter exporter) /*-{
+        $wnd.$registerPerspective = exporter.@org.uberfire.client.exporter.PerspectiveJSExporter::registerPerspective(Ljava/lang/Object;);
     }-*/;
 }

@@ -15,16 +15,15 @@
  */
 package org.uberfire.ext.wires.core.client.factories;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.commons.validation.PortablePreconditions;
 import org.uberfire.ext.wires.core.api.factories.ShapeFactory;
 
@@ -35,9 +34,10 @@ import org.uberfire.ext.wires.core.api.factories.ShapeFactory;
 public class ShapeFactoryCache {
 
     @Inject
-    private SyncBeanManager iocManager;
+    @Any
+    private ManagedInstance<ShapeFactory<?>> shapeFactoryProvider;
 
-    private Set<ShapeFactory> factories = new HashSet<ShapeFactory>();
+    private Set<ShapeFactory> factories = new HashSet<>();
 
     @PostConstruct
     private void setup() {
@@ -54,10 +54,9 @@ public class ShapeFactoryCache {
     }
 
     private Set<ShapeFactory> getAvailableFactories() {
-        final Set<ShapeFactory> factories = new HashSet<ShapeFactory>();
-        final Collection<SyncBeanDef<ShapeFactory>> factoryBeans = iocManager.lookupBeans(ShapeFactory.class);
-        for (SyncBeanDef<ShapeFactory> factoryBean : factoryBeans) {
-            factories.add(factoryBean.getInstance());
+        final Set<ShapeFactory> factories = new HashSet<>();
+        for (ShapeFactory bean : shapeFactoryProvider) {
+            factories.add(bean);
         }
         return factories;
     }

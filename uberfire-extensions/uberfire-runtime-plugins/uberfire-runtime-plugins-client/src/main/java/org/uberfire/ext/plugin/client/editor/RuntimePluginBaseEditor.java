@@ -25,9 +25,7 @@ import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.StyleInjector;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.backend.vfs.ObservablePath;
-import org.uberfire.client.mvp.ActivityBeansInfo;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.ext.editor.commons.client.BaseEditor;
@@ -78,12 +76,6 @@ public abstract class RuntimePluginBaseEditor extends BaseEditor {
     private Event<PluginUnregistered> pluginUnregisteredEvent;
 
     @Inject
-    private SyncBeanManager beanManager;
-
-    @Inject
-    private ActivityBeansInfo activityBeansInfo;
-
-    @Inject
     private SavePopUpPresenter savePopUpPresenter;
 
     protected RuntimePluginBaseEditor(final BaseEditorView baseView) {
@@ -129,14 +121,17 @@ public abstract class RuntimePluginBaseEditor extends BaseEditor {
         }
     }
 
+    @Override
     protected Caller<? extends SupportsDelete> getDeleteServiceCaller() {
         return pluginServices;
     }
 
+    @Override
     protected Caller<? extends SupportsRename> getRenameServiceCaller() {
         return pluginServices;
     }
 
+    @Override
     protected Caller<? extends SupportsCopy> getCopyServiceCaller() {
         return pluginServices;
     }
@@ -175,6 +170,7 @@ public abstract class RuntimePluginBaseEditor extends BaseEditor {
                                        view().getContent().getLanguage());
     }
 
+    @Override
     protected void save() {
         savePopUpPresenter.show(getCurrentPath(),
                                 getSaveCommand());

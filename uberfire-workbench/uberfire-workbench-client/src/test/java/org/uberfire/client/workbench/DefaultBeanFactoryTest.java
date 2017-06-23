@@ -16,18 +16,23 @@
 
 package org.uberfire.client.workbench;
 
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
+import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
 import org.uberfire.client.workbench.pmgr.nswe.part.WorkbenchPartPresenterDefault;
 import org.uberfire.client.workbench.pmgr.unanchored.part.UnanchoredWorkbenchPartPresenter;
+import org.uberfire.client.workbench.widgets.dnd.CompassDropController;
 
 import static org.mockito.Mockito.*;
+
+import javax.enterprise.inject.Instance;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultBeanFactoryTest {
@@ -38,16 +43,33 @@ public class DefaultBeanFactoryTest {
     @Mock
     private WorkbenchPartPresenterDefault workbenchPartPresenterDefault;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private SyncBeanManager iocManager;
+    @Mock
+    private Instance<WorkbenchPartPresenter> partPresenterProvider;
+
+    @Mock
+    private Instance<UnanchoredWorkbenchPartPresenter> unachoredProvider;
+
+    @Mock
+    private Instance<WorkbenchPartPresenterDefault> defaultProvider;
+
+    @Mock
+    private Instance<CompassDropController> compassDropControllerProvider;
+
+    @Mock
+    private BeanDefProvider<WorkbenchPanelPresenter> panelPresenterProvider;
+
+    @Mock
+    private Disposer<Object> disposer;
 
     @InjectMocks
     private DefaultBeanFactory beanFactory;
 
     @Before
     public void setup() {
-        when(iocManager.lookupBean(UnanchoredWorkbenchPartPresenter.class).getInstance()).thenReturn(unanchoredWorkbenchPartPresenter);
-        when(iocManager.lookupBean(WorkbenchPartPresenterDefault.class).getInstance()).thenReturn(workbenchPartPresenterDefault);
+        when(partPresenterProvider.select(UnanchoredWorkbenchPartPresenter.class)).thenReturn(unachoredProvider);
+        when(unachoredProvider.get()).thenReturn(unanchoredWorkbenchPartPresenter);
+        when(partPresenterProvider.select(WorkbenchPartPresenterDefault.class)).thenReturn(defaultProvider);
+        when(defaultProvider.get()).thenReturn(workbenchPartPresenterDefault);
     }
 
     @Test
@@ -57,9 +79,9 @@ public class DefaultBeanFactoryTest {
                                      null,
                                      null,
                                      UnanchoredWorkbenchPartPresenter.class);
-        verify(iocManager.lookupBean(UnanchoredWorkbenchPartPresenter.class)).getInstance();
-        verify(iocManager.lookupBean(WorkbenchPartPresenterDefault.class),
-               never()).getInstance();
+        verify(partPresenterProvider.select(UnanchoredWorkbenchPartPresenter.class)).get();
+        verify(partPresenterProvider.select(WorkbenchPartPresenterDefault.class),
+               never()).get();
     }
 
     @Test
@@ -69,8 +91,8 @@ public class DefaultBeanFactoryTest {
                                      null,
                                      null,
                                      WorkbenchPartPresenterDefault.class);
-        verify(iocManager.lookupBean(WorkbenchPartPresenterDefault.class)).getInstance();
-        verify(iocManager.lookupBean(UnanchoredWorkbenchPartPresenter.class),
-               never()).getInstance();
+        verify(partPresenterProvider.select(WorkbenchPartPresenterDefault.class)).get();
+        verify(partPresenterProvider.select(UnanchoredWorkbenchPartPresenter.class),
+               never()).get();
     }
 }

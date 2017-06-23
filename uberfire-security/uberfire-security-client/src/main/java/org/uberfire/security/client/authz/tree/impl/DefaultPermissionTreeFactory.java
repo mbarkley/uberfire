@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -42,17 +42,16 @@ import org.uberfire.security.client.authz.tree.PermissionTreeProvider;
 public class DefaultPermissionTreeFactory implements PermissionTreeFactory {
 
     private PermissionManager permissionManager;
-    private SyncBeanManager beanManager;
     private Collection<PermissionTreeProvider> permissionTreeProviderSet = new HashSet<>();
+    private ManagedInstance<PermissionTreeProvider> permTreeProvidersInstance;
 
     public DefaultPermissionTreeFactory() {
     }
 
     @Inject
-    public DefaultPermissionTreeFactory(PermissionManager permissionManager,
-                                        SyncBeanManager beanManager) {
+    public DefaultPermissionTreeFactory(PermissionManager permissionManager, @Any ManagedInstance<PermissionTreeProvider> permTreeProvidersInstance) {
         this.permissionManager = permissionManager;
-        this.beanManager = beanManager;
+        this.permTreeProvidersInstance = permTreeProvidersInstance;
     }
 
     public DefaultPermissionTreeFactory(PermissionManager permissionManager,
@@ -63,8 +62,7 @@ public class DefaultPermissionTreeFactory implements PermissionTreeFactory {
 
     @PostConstruct
     private void init() {
-        for (SyncBeanDef<PermissionTreeProvider> beanDef : beanManager.lookupBeans(PermissionTreeProvider.class)) {
-            PermissionTreeProvider provider = beanDef.getInstance();
+        for (PermissionTreeProvider provider : permTreeProvidersInstance) {
             permissionTreeProviderSet.add(provider);
         }
     }

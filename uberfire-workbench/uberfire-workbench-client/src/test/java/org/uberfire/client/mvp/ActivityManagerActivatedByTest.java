@@ -22,8 +22,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +60,7 @@ public class ActivityManagerActivatedByTest {
     @Mock
     ActivityBeansCache activityBeansCache;
     @Mock
-    SyncBeanManager iocManager;
+    BeanDefProvider<Activity> activityProvider;
     @Mock
     AuthorizationManager authzManager;
     private Activity activatedActivity;
@@ -77,13 +78,14 @@ public class ActivityManagerActivatedByTest {
 
         when(nonActivatedActivityBean.isActivated()).thenReturn(false);
 
-        Collection<SyncBeanDef<Activity>> activityList = new ArrayList<SyncBeanDef<Activity>>();
+        Collection<SyncBeanDef<Activity>> activityList = new ArrayList<>();
         activityList.add(activatedActivityBean);
         activityList.add(nonActivatedActivityBean);
 
         // This covers the case where the activity manager goes directly to the Errai bean manager.
         // The list includes all beans, active or otherwise, and the activity manager has to filter them.
-        when(iocManager.lookupBeans(Activity.class)).thenReturn(activityList);
+        when(activityProvider.select(Activity.class)).thenReturn(activityProvider);
+        when(activityProvider.iterator()).then(inv -> activityList.iterator());
 
         // And this covers the case where the activity manager does the lookup via the ActivityBeansCache.
         // We set this up assuming ActivityBeansCache is well-behaved, and hides the existence of inactive beans.

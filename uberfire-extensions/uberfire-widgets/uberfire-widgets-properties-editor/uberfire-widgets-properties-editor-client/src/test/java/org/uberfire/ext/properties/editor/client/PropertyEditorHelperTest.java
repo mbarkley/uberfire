@@ -53,7 +53,7 @@ public class PropertyEditorHelperTest {
 
     @Test
     public void validateEventTest() {
-        ArrayList<PropertyEditorCategory> properties = new ArrayList<PropertyEditorCategory>();
+        ArrayList<PropertyEditorCategory> properties = new ArrayList<>();
         properties.add(new PropertyEditorCategory("Category"));
         PropertyEditorEvent event = new PropertyEditorEvent("id",
                                                             properties);
@@ -104,7 +104,8 @@ public class PropertyEditorHelperTest {
         PropertyEditorHelper.createCategory(propertyEditorWidget,
                                             propertyMenu,
                                             category,
-                                            "");
+                                            "",
+                                            null);
 
         verify(propertyMenu,
                never()).add(any(Widget.class));

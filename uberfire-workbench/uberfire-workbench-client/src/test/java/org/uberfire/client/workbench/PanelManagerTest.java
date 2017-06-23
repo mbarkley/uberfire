@@ -146,7 +146,6 @@ public class PanelManagerTest {
                                                 placeMinimizedEvent,
                                                 placeHidEvent,
                                                 null,
-                                                null,
                                                 layoutSelection,
                                                 beanFactory));
         panelManager.setRoot(testPerspectiveActivity,

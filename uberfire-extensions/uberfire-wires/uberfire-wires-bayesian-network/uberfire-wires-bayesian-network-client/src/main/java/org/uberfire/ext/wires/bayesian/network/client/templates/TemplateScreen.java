@@ -31,7 +31,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -50,17 +49,17 @@ public class TemplateScreen extends Composite {
     @UiField
     SimplePanel templates;
     @Inject
-    private SyncBeanManager iocManager;
+    private TemplatesGroup templatesGroup;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         initWidget(uiBinder.createAndBindUi(this));
 
         accordion.setId(DOM.createUniqueId());
         headerTemplates.setDataParent(accordion.getId());
         headerTemplates.setDataTargetWidget(collapseTemplates);
 
-        templates.add(iocManager.lookupBean(TemplatesGroup.class).getInstance());
+        templates.add(templatesGroup);
     }
 
     @WorkbenchPartTitle

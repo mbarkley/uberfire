@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.PanelCollapse;
 import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -51,17 +50,17 @@ public class ActionsScreen extends Composite {
     @UiField
     PanelCollapse collapseActions;
     @Inject
-    private SyncBeanManager iocManager;
+    private ActionsGroup actionsGroup;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         initWidget(uiBinder.createAndBindUi(this));
 
         accordion.setId(DOM.createUniqueId());
         headerActions.setDataParent(accordion.getId());
         headerActions.setDataTargetWidget(collapseActions);
 
-        actions.add(iocManager.lookupBean(ActionsGroup.class).getInstance());
+        actions.add(actionsGroup);
     }
 
     @WorkbenchPartTitle

@@ -37,7 +37,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UIPart;
@@ -73,13 +72,13 @@ import static org.uberfire.plugin.PluginUtil.ensureIterable;
 @ApplicationScoped
 public class PanelManagerImpl implements PanelManager {
 
-    protected final Map<PartDefinition, WorkbenchPartPresenter> mapPartDefinitionToPresenter = new HashMap<PartDefinition, WorkbenchPartPresenter>();
-    protected final Map<PanelDefinition, WorkbenchPanelPresenter> mapPanelDefinitionToPresenter = new HashMap<PanelDefinition, WorkbenchPanelPresenter>();
+    protected final Map<PartDefinition, WorkbenchPartPresenter> mapPartDefinitionToPresenter = new HashMap<>();
+    protected final Map<PanelDefinition, WorkbenchPanelPresenter> mapPanelDefinitionToPresenter = new HashMap<>();
     /**
      * Remembers which HasWidgets contains each existing custom panel. Items are removed from this map when the panels
      * are closed/removed.
      */
-    protected final Map<PanelDefinition, HasWidgets> customPanels = new HashMap<PanelDefinition, HasWidgets>();
+    protected final Map<PanelDefinition, HasWidgets> customPanels = new HashMap<>();
     /**
      * Remembers which HTMLElements contain each existing custom panel. Items are removed from this map when the panels
      * are closed/removed.
@@ -92,7 +91,6 @@ public class PanelManagerImpl implements PanelManager {
     protected Event<PlaceMaximizedEvent> placeMaximizedEvent;
     protected Event<PlaceMinimizedEvent> placeMinimizedEvent;
     protected Event<PlaceHiddenEvent> placeHiddenEvent;
-    protected SyncBeanManager iocManager;
     protected Instance<PlaceManager> placeManager;
     /**
      * Description that the current root panel was created from. Presently, this is a mutable data structure and the
@@ -122,7 +120,6 @@ public class PanelManagerImpl implements PanelManager {
             Event<PlaceMaximizedEvent> placeMaximizedEvent,
             Event<PlaceMinimizedEvent> placeMinimizedEventEvent,
             Event<PlaceHiddenEvent> placeHiddenEvent,
-            SyncBeanManager iocManager,
             Instance<PlaceManager> placeManager,
             LayoutSelection layoutSelection,
             BeanFactory beanFactory) {
@@ -133,7 +130,6 @@ public class PanelManagerImpl implements PanelManager {
         this.placeMaximizedEvent = placeMaximizedEvent;
         this.placeMinimizedEvent = placeMinimizedEventEvent;
         this.placeHiddenEvent = placeHiddenEvent;
-        this.iocManager = iocManager;
         this.placeManager = placeManager;
         this.layoutSelection = layoutSelection;
         this.beanFactory = beanFactory;

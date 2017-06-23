@@ -17,10 +17,10 @@
 package org.uberfire.ext.preferences.client.utils;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.uberfire.client.mvp.ActivityBeansInfo;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
@@ -33,10 +33,12 @@ import org.uberfire.ext.preferences.client.annotations.PreferenceForm;
 public class PreferenceFormBeansInfo {
 
     private ActivityBeansInfo activityBeansInfo;
+    private BeanDefProvider<WorkbenchScreenActivity> screenBeans;
 
     @Inject
-    public PreferenceFormBeansInfo(final ActivityBeansInfo activityBeansInfo) {
+    public PreferenceFormBeansInfo(final ActivityBeansInfo activityBeansInfo, final BeanDefProvider<WorkbenchScreenActivity> screenBeans) {
         this.activityBeansInfo = activityBeansInfo;
+        this.screenBeans = screenBeans;
     }
 
     /**
@@ -46,8 +48,6 @@ public class PreferenceFormBeansInfo {
      * @return The screen bean identifier.
      */
     public String getPreferenceFormFor(final String preferenceIdentifier) {
-        final Collection<? extends IOCBeanDef<?>> screenBeans = activityBeansInfo.lookupBeans(WorkbenchScreenActivity.class);
-
         for (final IOCBeanDef<?> beanDef : screenBeans) {
             for (final Annotation annotation : beanDef.getQualifiers()) {
                 if (annotation instanceof PreferenceForm) {

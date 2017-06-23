@@ -34,6 +34,7 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.jboss.errai.ioc.client.IOCUtil;
 import org.uberfire.ext.properties.editor.model.PropertyEditorEvent;
 
 public class PropertyEditorWidget extends Composite {
@@ -49,8 +50,13 @@ public class PropertyEditorWidget extends Composite {
     @UiField
     Button reload;
     List<String> expandedCategories = new ArrayList<>();
+    private AbstractFieldInstanceProvider fieldProvider;
 
     public PropertyEditorWidget() {
+        /*
+         * FIXME This is a hack so that AbstractField subtypes are cosidered reachable by Errai.
+         */
+        fieldProvider = IOCUtil.getInstance(AbstractFieldInstanceProvider.class);
         initWidget(uiBinder.createAndBindUi(this));
     }
 
@@ -65,7 +71,8 @@ public class PropertyEditorWidget extends Composite {
             this.filterBox.setText("");
             PropertyEditorHelper.extractEditorFrom(this,
                                                    propertyMenu,
-                                                   event);
+                                                   event,
+                                                   fieldProvider.provider());
         }
     }
 
@@ -75,7 +82,8 @@ public class PropertyEditorWidget extends Composite {
         PropertyEditorHelper.extractEditorFrom(this,
                                                propertyMenu,
                                                originalEvent,
-                                               "");
+                                               "",
+                                               fieldProvider.provider());
     }
 
     @UiHandler("filterBox")
@@ -85,7 +93,8 @@ public class PropertyEditorWidget extends Composite {
             PropertyEditorHelper.extractEditorFrom(this,
                                                    propertyMenu,
                                                    originalEvent,
-                                                   filterBox.getText());
+                                                   filterBox.getText(),
+                                                   fieldProvider.provider());
         }
     }
 
@@ -102,6 +111,7 @@ public class PropertyEditorWidget extends Composite {
      * one panel expanded, so this method is
      * @deprecated replaced by getExpandedCategories()
      */
+    @Deprecated
     public String getLastOpenAccordionGroupTitle() {
         if (expandedCategories.isEmpty()) {
             return "";

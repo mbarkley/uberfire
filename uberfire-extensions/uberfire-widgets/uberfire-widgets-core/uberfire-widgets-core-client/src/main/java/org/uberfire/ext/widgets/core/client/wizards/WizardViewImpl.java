@@ -29,8 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.NavPills;
 import org.gwtbootstrap3.client.ui.base.modal.ModalDialog;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 
 /**
@@ -49,9 +48,9 @@ public class WizardViewImpl extends BaseModal
     protected Column body;
 
     protected WizardPopupFooter footer;
+    private List<WizardPageTitle> pageTitleWidgets = new ArrayList<>();
     @Inject
-    private SyncBeanManager iocBeanManager;
-    private List<WizardPageTitle> pageTitleWidgets = new ArrayList<WizardPageTitle>();
+    private ManagedInstance<WizardPageTitle> wizardPageTitleProvider;
     private int pageNumber;
     private int pageNumberTotal;
     private AbstractWizard presenter;
@@ -118,15 +117,12 @@ public class WizardViewImpl extends BaseModal
     }
 
     private void releaseWizardPageTitles() {
-        for (WizardPageTitle wpt : pageTitleWidgets) {
-            iocBeanManager.destroyBean(wpt);
-        }
+        wizardPageTitleProvider.destroyAll();
         pageTitleWidgets.clear();
     }
 
     private WizardPageTitle makeWizardPageTitle(final WizardPage page) {
-        final SyncBeanDef<WizardPageTitle> beanDefinition = iocBeanManager.lookupBean(WizardPageTitle.class);
-        final WizardPageTitle bean = beanDefinition.getInstance();
+        final WizardPageTitle bean = wizardPageTitleProvider.get();
         bean.setContent(page);
         return bean;
     }

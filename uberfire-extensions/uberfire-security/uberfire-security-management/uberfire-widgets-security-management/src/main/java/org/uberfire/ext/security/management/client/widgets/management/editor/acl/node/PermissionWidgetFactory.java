@@ -19,39 +19,54 @@ package org.uberfire.ext.security.management.client.widgets.management.editor.ac
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.security.client.authz.tree.PermissionNode;
 import org.uberfire.security.client.authz.tree.impl.PermissionLeafNode;
 
 @ApplicationScoped
 public class PermissionWidgetFactory {
 
-    SyncBeanManager beanManager;
+    private ManagedInstance<LeafPermissionNodeEditor> leafNodeEditor;
+    private ManagedInstance<MultiplePermissionNodeEditor> multipleNodeEditor;
+    private ManagedInstance<LeafPermissionNodeViewer> leafNodeViewer;
+    private ManagedInstance<MultiplePermissionNodeViewer> multipleNodeViewer;
+    private ManagedInstance<PermissionSwitch> permissionSwitch;
+    private ManagedInstance<PermissionExceptionSwitch> permissionExceptionSwitch;
 
     @Inject
-    public PermissionWidgetFactory(SyncBeanManager beanManager) {
-        this.beanManager = beanManager;
+    public PermissionWidgetFactory(ManagedInstance<LeafPermissionNodeEditor> leafNodeEditor,
+                                   ManagedInstance<MultiplePermissionNodeEditor> multipleNodeEditor,
+                                   ManagedInstance<LeafPermissionNodeViewer> leafNodeViewer,
+                                   ManagedInstance<MultiplePermissionNodeViewer> multipleNodeViewer,
+                                   ManagedInstance<PermissionSwitch> permissionSwitch,
+                                   ManagedInstance<PermissionExceptionSwitch> permissionExceptionSwitch) {
+                                    this.leafNodeEditor = leafNodeEditor;
+                                    this.multipleNodeEditor = multipleNodeEditor;
+                                    this.leafNodeViewer = leafNodeViewer;
+                                    this.multipleNodeViewer = multipleNodeViewer;
+                                    this.permissionSwitch = permissionSwitch;
+                                    this.permissionExceptionSwitch = permissionExceptionSwitch;
     }
 
     public PermissionNodeEditor createEditor(PermissionNode node) {
         if (node instanceof PermissionLeafNode) {
-            return beanManager.lookupBean(LeafPermissionNodeEditor.class).newInstance();
+            return leafNodeEditor.get();
         }
-        return beanManager.lookupBean(MultiplePermissionNodeEditor.class).newInstance();
+        return multipleNodeEditor.get();
     }
 
     public PermissionNodeViewer createViewer(PermissionNode node) {
         if (node instanceof PermissionLeafNode) {
-            return beanManager.lookupBean(LeafPermissionNodeViewer.class).newInstance();
+            return leafNodeViewer.get();
         }
-        return beanManager.lookupBean(MultiplePermissionNodeViewer.class).newInstance();
+        return multipleNodeViewer.get();
     }
 
     public PermissionSwitch createSwitch() {
-        return beanManager.lookupBean(PermissionSwitch.class).newInstance();
+        return permissionSwitch.get();
     }
 
     public PermissionExceptionSwitch createExceptionSwitch() {
-        return beanManager.lookupBean(PermissionExceptionSwitch.class).newInstance();
+        return permissionExceptionSwitch.get();
     }
 }

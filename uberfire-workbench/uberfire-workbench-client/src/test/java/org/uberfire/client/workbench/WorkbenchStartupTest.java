@@ -18,15 +18,14 @@ package org.uberfire.client.workbench;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Collections;
 import javax.enterprise.event.Event;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.bus.client.api.ClientMessageBus;
 import org.jboss.errai.bus.client.framework.ClientMessageBusImpl;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +60,7 @@ public class WorkbenchStartupTest {
     Workbench workbench;
 
     @Mock
-    SyncBeanManager bm;
+    BeanDefProvider<PerspectiveActivity> perspectives;
     @Mock
     WorkbenchPickupDragController dragController;
     @Mock
@@ -99,14 +98,12 @@ public class WorkbenchStartupTest {
 
     @Before
     public void setup() {
-        when(bm.lookupBeans(any(Class.class))).thenReturn(Collections.emptyList());
         when(dragController.getBoundaryPanel()).thenReturn(new AbsolutePanel());
         doNothing().when(workbench).addLayoutToRootPanel(any(WorkbenchLayout.class));
         when(permissionManager.getAuthorizationPolicy()).thenReturn(authorizationPolicy);
         when(authorizationManager.authorize(any(Resource.class),
                                             any(User.class))).thenReturn(true);
-        when(bm.lookupBeans(PerspectiveActivity.class)).thenReturn(Arrays.asList(perspectiveBean1,
-                                                                                 perspectiveBean2));
+        when(perspectives.iterator()).thenReturn(Arrays.asList(perspectiveBean1, perspectiveBean2).iterator());
         when(perspectiveBean1.getInstance()).thenReturn(perspectiveActivity1);
         when(perspectiveBean2.getInstance()).thenReturn(perspectiveActivity2);
         when(perspectiveActivity1.getIdentifier()).thenReturn("perspective1");

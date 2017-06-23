@@ -17,7 +17,6 @@
 package org.uberfire.client.workbench;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import com.google.gwt.animation.client.Animation;
@@ -45,8 +45,8 @@ import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.util.Layouts;
 import org.uberfire.client.workbench.docks.UberfireDocksContainer;
 import org.uberfire.client.workbench.widgets.dnd.WorkbenchDragAndDropManager;
@@ -78,8 +78,7 @@ public class WorkbenchLayoutImpl implements WorkbenchLayout {
      * {@link org.uberfire.client.workbench.PanelManager#setPerspective(PerspectiveDefinition)} gets called.
      */
     private final SimpleLayoutPanel perspectiveRootContainer = new SimpleLayoutPanel();
-    private final Map<Widget, OriginalStyleInfo> maximizedWidgetOriginalStyles = new HashMap<Widget, OriginalStyleInfo>();
-    private SyncBeanManager iocManager;
+    private final Map<Widget, OriginalStyleInfo> maximizedWidgetOriginalStyles = new HashMap<>();
     /**
      * Top-level widget of the whole workbench layout. This panel contains the nested container panels for headers,
      * footers, and the current perspective. During a normal startup of UberFire, this panel would be added directly to
@@ -109,12 +108,14 @@ public class WorkbenchLayoutImpl implements WorkbenchLayout {
      */
     private WorkbenchPickupDragController dragController;
 
+    private BeanDefProvider<Orderable> orderableProvider;
+
     public WorkbenchLayoutImpl() {
 
     }
 
     @Inject
-    public WorkbenchLayoutImpl(SyncBeanManager iocManager,
+    public WorkbenchLayoutImpl(@Any BeanDefProvider<Orderable> orderableProvider,
                                HeaderPanel root,
                                WorkbenchDragAndDropManager dndManager,
                                UberfireDocksContainer uberfireDocksContainer,
@@ -122,7 +123,7 @@ public class WorkbenchLayoutImpl implements WorkbenchLayout {
                                Div headerPanel,
                                Div footerPanel) {
 
-        this.iocManager = iocManager;
+        this.orderableProvider = orderableProvider;
         this.root = root;
         this.dndManager = dndManager;
         this.uberfireDocksContainer = uberfireDocksContainer;
@@ -275,8 +276,8 @@ public class WorkbenchLayoutImpl implements WorkbenchLayout {
     private <T extends Orderable> List<T> discoverMarginWidgets(boolean isStandaloneMode,
                                                                 Set<String> headersToKeep,
                                                                 Class<T> marginType) {
-        final Collection<SyncBeanDef<T>> headerBeans = iocManager.lookupBeans(marginType);
-        final List<T> instances = new ArrayList<T>();
+        final Iterable<SyncBeanDef<T>> headerBeans = orderableProvider.select(marginType);
+        final List<T> instances = new ArrayList<>();
         for (final SyncBeanDef<T> headerBean : headerBeans) {
             if (!headerBean.isActivated()) {
                 continue;

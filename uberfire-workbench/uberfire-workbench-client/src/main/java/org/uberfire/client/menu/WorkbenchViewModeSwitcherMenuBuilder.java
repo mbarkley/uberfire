@@ -17,15 +17,20 @@
 package org.uberfire.client.menu;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.ioc.client.container.IOC;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 public class WorkbenchViewModeSwitcherMenuBuilder implements MenuFactory.CustomMenuBuilder {
+
+    @Inject
+    private ManagedInstance<WorkbenchViewModeSwitcherPresenter> presenterProvider;
 
     @Override
     public void push(MenuFactory.CustomMenuBuilder element) {
@@ -38,7 +43,7 @@ public class WorkbenchViewModeSwitcherMenuBuilder implements MenuFactory.CustomM
 
             @Override
             public IsWidget build() {
-                return IOC.getBeanManager().lookupBean(WorkbenchViewModeSwitcherPresenter.class).getInstance();
+                return presenterProvider.get();
             }
         };
     }

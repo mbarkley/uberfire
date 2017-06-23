@@ -36,7 +36,7 @@ import com.google.gwtmockito.WithClassesToStub;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +58,7 @@ public class WorkbenchLayoutImplTest {
     private WorkbenchLayoutImpl workbenchLayout;
     private Widget widget;
     @Mock
-    private SyncBeanManager iocManager;
+    private BeanDefProvider<Orderable> orderableProvider;
     @Mock
     private HeaderPanel root;
     @Mock
@@ -77,7 +77,7 @@ public class WorkbenchLayoutImplTest {
 
     @Before
     public void setup() {
-        workbenchLayout = new WorkbenchLayoutImpl(iocManager,
+        workbenchLayout = new WorkbenchLayoutImpl(orderableProvider,
                                                   root,
                                                   dndManager,
                                                   uberfireDocksContainer,

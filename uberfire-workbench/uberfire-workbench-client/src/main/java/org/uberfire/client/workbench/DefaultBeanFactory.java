@@ -15,13 +15,15 @@
  */
 package org.uberfire.client.workbench;
 
-import java.util.Collection;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.TemplatedActivity;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
@@ -41,7 +43,16 @@ public class DefaultBeanFactory
         implements BeanFactory {
 
     @Inject
-    protected SyncBeanManager iocManager;
+    private Instance<WorkbenchPartPresenter> partPresenterProvider;
+
+    @Inject
+    private Instance<CompassDropController> compassDropControllerProvider;
+
+    @Inject
+    private BeanDefProvider<WorkbenchPanelPresenter> panelPresenterProvider;
+
+    @Inject
+    private Disposer<Object> disposer;
 
     @Override
     public WorkbenchPartPresenter newWorkbenchPart(final Menus menus,
@@ -49,7 +60,7 @@ public class DefaultBeanFactory
                                                    final IsWidget titleDecoration,
                                                    final PartDefinition definition,
                                                    final Class<? extends WorkbenchPartPresenter> partType) {
-        final WorkbenchPartPresenter part = iocManager.lookupBean(partType).getInstance();
+        final WorkbenchPartPresenter part = partPresenterProvider.select(partType).get();
 
         part.setTitle(title);
         part.setMenus(menus);
@@ -71,8 +82,7 @@ public class DefaultBeanFactory
 
     @Override
     public WorkbenchPanelPresenter newWorkbenchPanel(final PanelDefinition definition) {
-        Collection<SyncBeanDef<WorkbenchPanelPresenter>> beans = iocManager.lookupBeans(WorkbenchPanelPresenter.class);
-        for (SyncBeanDef<WorkbenchPanelPresenter> bean : beans) {
+        for (SyncBeanDef<WorkbenchPanelPresenter> bean : panelPresenterProvider) {
             if (bean.getBeanClass().getName().equals(definition.getPanelType())) {
                 final WorkbenchPanelPresenter panel = bean.getInstance();
                 panel.setDefinition(definition);
@@ -84,13 +94,13 @@ public class DefaultBeanFactory
 
     @Override
     public CompassDropController newDropController(final WorkbenchPanelView<?> view) {
-        final CompassDropController dropController = iocManager.lookupBean(CompassDropController.class).getInstance();
+        final CompassDropController dropController = compassDropControllerProvider.get();
         dropController.setup(view);
         return dropController;
     }
 
     @Override
     public void destroy(final Object o) {
-        iocManager.destroyBean(o);
+        disposer.dispose(o);
     }
 }

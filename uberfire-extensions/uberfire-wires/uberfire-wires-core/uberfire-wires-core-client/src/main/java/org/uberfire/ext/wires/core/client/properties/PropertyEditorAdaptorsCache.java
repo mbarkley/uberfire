@@ -15,15 +15,14 @@
  */
 package org.uberfire.ext.wires.core.client.properties;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.ext.wires.core.api.properties.PropertyEditorAdaptor;
 
 /**
@@ -33,9 +32,10 @@ import org.uberfire.ext.wires.core.api.properties.PropertyEditorAdaptor;
 public class PropertyEditorAdaptorsCache {
 
     @Inject
-    private SyncBeanManager iocManager;
+    @Any
+    private ManagedInstance<PropertyEditorAdaptor> propertyEditorAdaptorProvider;
 
-    private Set<PropertyEditorAdaptor> adaptors = new HashSet<PropertyEditorAdaptor>();
+    private Set<PropertyEditorAdaptor> adaptors = new HashSet<>();
 
     @PostConstruct
     private void setup() {
@@ -47,10 +47,9 @@ public class PropertyEditorAdaptorsCache {
     }
 
     private Set<PropertyEditorAdaptor> getAvailableAdaptors() {
-        final Set<PropertyEditorAdaptor> factories = new HashSet<PropertyEditorAdaptor>();
-        final Collection<SyncBeanDef<PropertyEditorAdaptor>> factoryBeans = iocManager.lookupBeans(PropertyEditorAdaptor.class);
-        for (SyncBeanDef<PropertyEditorAdaptor> factoryBean : factoryBeans) {
-            factories.add(factoryBean.getInstance());
+        final Set<PropertyEditorAdaptor> factories = new HashSet<>();
+        for (PropertyEditorAdaptor factoryBean : propertyEditorAdaptorProvider) {
+            factories.add(factoryBean);
         }
         return factories;
     }

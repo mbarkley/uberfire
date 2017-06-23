@@ -23,11 +23,18 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Named;
 
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.ActivityBeansInfo;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.SplashScreenActivity;
+import org.uberfire.client.mvp.WorkbenchEditorActivity;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.ext.preferences.client.annotations.PreferenceForm;
 import org.uberfire.preferences.shared.bean.BasePreference;
@@ -35,26 +42,32 @@ import org.uberfire.preferences.shared.bean.BasePreference;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PreferenceFormBeansInfoTest {
 
-    private SyncBeanManager syncBeanManager;
+    @Mock
+    private BeanDefProvider<WorkbenchScreenActivity> screenProvider;
 
+    @Mock
+    private BeanDefProvider<PerspectiveActivity> perspectiveProvider;
+
+    @Mock
+    private BeanDefProvider<SplashScreenActivity> splashScreenProvider;
+
+    @Mock
+    private BeanDefProvider<WorkbenchEditorActivity> editorProvider;
+
+    @InjectMocks
     private ActivityBeansInfo activityBeansInfo;
 
     private PreferenceFormBeansInfo preferenceFormBeansInfo;
 
     @Before
     public void setup() {
-        syncBeanManager = mock(SyncBeanManager.class);
-        activityBeansInfo = new ActivityBeansInfo() {
-            @Override
-            public SyncBeanManager getBeanManager() {
-                return syncBeanManager;
-            }
-        };
-        preferenceFormBeansInfo = new PreferenceFormBeansInfo(activityBeansInfo);
-        when(syncBeanManager.lookupBeans(WorkbenchScreenActivity.class))
-                .thenReturn(generateBeansList());
+        activityBeansInfo = new ActivityBeansInfo();
+        preferenceFormBeansInfo = new PreferenceFormBeansInfo(activityBeansInfo, screenProvider);
+        when(screenProvider.iterator())
+                .then(inv -> generateBeansList().iterator());
     }
 
     @Test
@@ -68,7 +81,7 @@ public class PreferenceFormBeansInfoTest {
     }
 
     private Collection<SyncBeanDef<WorkbenchScreenActivity>> generateBeansList() {
-        Collection<SyncBeanDef<WorkbenchScreenActivity>> beans = new ArrayList<SyncBeanDef<WorkbenchScreenActivity>>();
+        Collection<SyncBeanDef<WorkbenchScreenActivity>> beans = new ArrayList<>();
 
         beans.add(generateBeanDef(null));
         beans.add(generateBeanDef("MyPreference1"));
@@ -107,7 +120,7 @@ public class PreferenceFormBeansInfoTest {
 
             @Override
             public Set<Annotation> getQualifiers() {
-                final HashSet<Annotation> annotations = new HashSet<Annotation>();
+                final HashSet<Annotation> annotations = new HashSet<>();
 
                 if (preferenceIdentifier != null) {
                     annotations.add(new PreferenceForm() {

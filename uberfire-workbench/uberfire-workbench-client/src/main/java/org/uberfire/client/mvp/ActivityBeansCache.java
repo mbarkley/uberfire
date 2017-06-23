@@ -29,9 +29,11 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -54,15 +56,17 @@ public class ActivityBeansCache {
     /**
      * All active activity beans mapped by their CDI bean name (names are mandatory for activity beans).
      */
-    private final Map<String, SyncBeanDef<Activity>> activitiesById = new HashMap<String, SyncBeanDef<Activity>>();
+    private final Map<String, SyncBeanDef<Activity>> activitiesById = new HashMap<>();
     /**
      * All active Activities that have an {@link AssociatedResources} annotation and are not splash screens.
      */
-    private final List<ActivityAndMetaInfo> resourceActivities = new ArrayList<ActivityAndMetaInfo>();
+    private final List<ActivityAndMetaInfo> resourceActivities = new ArrayList<>();
     /**
      * All active activities that are splash screens.
      */
-    private final List<SplashScreenActivity> splashActivities = new ArrayList<SplashScreenActivity>();
+    private final List<SplashScreenActivity> splashActivities = new ArrayList<>();
+    @Inject @Any
+    private BeanDefProvider<Activity> activityProvider;
     @Inject
     private SyncBeanManager iocManager;
     @Inject
@@ -124,8 +128,8 @@ public class ActivityBeansCache {
     }
 
     Collection<SyncBeanDef<Activity>> getAvailableActivities() {
-        Collection<SyncBeanDef<Activity>> activeBeans = new ArrayList<SyncBeanDef<Activity>>();
-        for (SyncBeanDef<Activity> bean : iocManager.lookupBeans(Activity.class)) {
+        Collection<SyncBeanDef<Activity>> activeBeans = new ArrayList<>();
+        for (SyncBeanDef<Activity> bean : activityProvider) {
             if (bean.isActivated()) {
                 activeBeans.add(bean);
             }
@@ -262,7 +266,7 @@ public class ActivityBeansCache {
     }
 
     public List<String> getActivitiesById() {
-        return new ArrayList<String>(activitiesById.keySet());
+        return new ArrayList<>(activitiesById.keySet());
     }
 
     class ActivityAndMetaInfo {

@@ -21,9 +21,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.jboss.errai.ioc.client.container.IOC;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -38,15 +40,24 @@ import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 @ApplicationScoped
 public class PluginJSExporter implements UberfireJSExporter {
 
-    public static void registerPlugin(final Object _obj) {
+    @Inject
+    private SyncBeanManager beanManager;
+
+    @Inject
+    private ActivityBeansCache activityBeansCache;
+
+    @Inject
+    private PlaceManager placeManager;
+
+    @Inject
+    private ManagedInstance<JSNativeScreen> nativeScreen;
+
+    public void registerPlugin(final Object _obj) {
         final JavaScriptObject obj = (JavaScriptObject) _obj;
 
         if (JSNativePlugin.hasStringProperty(obj,
                                              "id") && JSNativePlugin.hasTemplate(obj)) {
-            final SyncBeanManager beanManager = IOC.getBeanManager();
-            final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
-
-            final JSNativeScreen newNativePlugin = beanManager.lookupBean(JSNativeScreen.class).getInstance();
+            final JSNativeScreen newNativePlugin = nativeScreen.get();
             newNativePlugin.build(obj);
 
             JSWorkbenchScreenActivity activity = JSExporterUtils.findActivityIfExists(beanManager,
@@ -56,6 +67,7 @@ public class PluginJSExporter implements UberfireJSExporter {
             if (activity == null) {
                 registerNewActivity(beanManager,
                                     activityBeansCache,
+                                    placeManager,
                                     newNativePlugin);
             } else {
                 updateExistentActivity(newNativePlugin,
@@ -71,12 +83,12 @@ public class PluginJSExporter implements UberfireJSExporter {
 
     private static void registerNewActivity(final SyncBeanManager beanManager,
                                             final ActivityBeansCache activityBeansCache,
+                                            final PlaceManager placeManager,
                                             final JSNativeScreen newNativePlugin) {
         final JSWorkbenchScreenActivity activity;
-        activity = new JSWorkbenchScreenActivity(newNativePlugin,
-                                                 beanManager.lookupBean(PlaceManager.class).getInstance());
+        activity = new JSWorkbenchScreenActivity(newNativePlugin, placeManager);
 
-        final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
+        final Set<Annotation> qualifiers = new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS));
         final SingletonBeanDef<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity> beanDef =
                 new SingletonBeanDef<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity>(activity,
                                                                                            JSWorkbenchScreenActivity.class,
@@ -96,10 +108,10 @@ public class PluginJSExporter implements UberfireJSExporter {
 
     @Override
     public void export() {
-        publish();
+        publish(this);
     }
 
-    private native void publish() /*-{
-        $wnd.$registerPlugin = @org.uberfire.client.exporter.PluginJSExporter::registerPlugin(Ljava/lang/Object;);
+    private native void publish(PluginJSExporter exporter) /*-{
+        $wnd.$registerPlugin = exporter.@org.uberfire.client.exporter.PluginJSExporter::registerPlugin(Ljava/lang/Object;);
     }-*/;
 }

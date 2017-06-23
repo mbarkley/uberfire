@@ -20,9 +20,11 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.jboss.errai.ioc.client.container.IOC;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.editor.type.JSClientResourceType;
 import org.uberfire.client.editor.type.JSNativeClientResourceType;
@@ -33,14 +35,19 @@ import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @ApplicationScoped
 public class ResourceTypeDefinitionJSExporter implements UberfireJSExporter {
+    
+    @Inject
+    private ManagedInstance<JSNativeClientResourceType> clientResourceType;
+    
+    @Inject
+    private SyncBeanManager beanManager;
 
-    public static void registerResourceTypeDefinition(final Object _obj) {
+    public void registerResourceTypeDefinition(final Object _obj) {
         final JavaScriptObject obj = (JavaScriptObject) _obj;
 
         if (JSNativePlugin.hasStringProperty(obj,
                                              "id")) {
-            final SyncBeanManager beanManager = IOC.getBeanManager();
-            final JSNativeClientResourceType newNativeClientResourceType = beanManager.lookupBean(JSNativeClientResourceType.class).getInstance();
+            final JSNativeClientResourceType newNativeClientResourceType = clientResourceType.get();
             newNativeClientResourceType.build(obj);
             JSClientResourceType jsClientResourceType = new JSClientResourceType(newNativeClientResourceType);
             beanManager.registerBean(new SingletonBeanDef<ClientResourceType, JSClientResourceType>(jsClientResourceType,
@@ -54,10 +61,10 @@ public class ResourceTypeDefinitionJSExporter implements UberfireJSExporter {
 
     @Override
     public void export() {
-        publish();
+        publish(this);
     }
 
-    private native void publish() /*-{
-        $wnd.$registerResourceType = @org.uberfire.client.exporter.ResourceTypeDefinitionJSExporter::registerResourceTypeDefinition(Ljava/lang/Object;);
+    private native void publish(ResourceTypeDefinitionJSExporter exporter) /*-{
+        $wnd.$registerResourceType = exporter.@org.uberfire.client.exporter.ResourceTypeDefinitionJSExporter::registerResourceTypeDefinition(Ljava/lang/Object;);
     }-*/;
 }

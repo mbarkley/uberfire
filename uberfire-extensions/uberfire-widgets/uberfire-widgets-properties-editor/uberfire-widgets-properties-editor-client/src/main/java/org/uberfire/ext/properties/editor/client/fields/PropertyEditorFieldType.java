@@ -17,9 +17,9 @@
 package org.uberfire.ext.properties.editor.client.fields;
 
 import com.google.gwt.user.client.ui.Widget;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+
+import org.jboss.errai.ioc.client.IOCUtil;
+import org.uberfire.ext.properties.editor.client.AbstractFieldInstanceProvider;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 
 public enum PropertyEditorFieldType {
@@ -72,11 +72,18 @@ public enum PropertyEditorFieldType {
         }
     };
 
-    private static Widget getWidget(PropertyEditorFieldInfo property,
-                                    Class fieldType) {
-        SyncBeanManager beanManager = IOC.getBeanManager();
-        SyncBeanDef<?> iocBeanDef = beanManager.lookupBean(fieldType);
-        AbstractField field = (AbstractField) iocBeanDef.getInstance();
+    private static <F extends AbstractField> Widget getWidget(PropertyEditorFieldInfo property,
+                                    Class<F> fieldType) {
+        /*
+         * FIXME
+         * This uses a hack to make AbstractField subtypes reachable by Errai.
+         * This should be refactored so that the provider is properly passed in via dependency injection.
+         */
+        AbstractField field = IOCUtil
+                                .getInstance(AbstractFieldInstanceProvider.class)
+                                .provider()
+                                .select(fieldType)
+                                .get();
         return field.widget(property);
     }
 

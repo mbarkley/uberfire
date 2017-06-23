@@ -24,12 +24,13 @@ import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.ActivityLifecycleError.LifecyclePhase;
@@ -52,10 +53,10 @@ public class ActivityManagerImpl implements ActivityManager {
      * shut down yet. This set tracks objects by identity, so it is possible that it could have multiple activities of
      * the same type within it (for example, multiple editors of the same type for different files.)
      */
-    private final Map<Activity, PlaceRequest> startedActivities = new IdentityHashMap<Activity, PlaceRequest>();
-    private final Map<Object, Boolean> containsCache = new HashMap<Object, Boolean>();
-    @Inject
-    private SyncBeanManager iocManager;
+    private final Map<Activity, PlaceRequest> startedActivities = new IdentityHashMap<>();
+    private final Map<Object, Boolean> containsCache = new HashMap<>();
+    @Inject @Any
+    private BeanDefProvider<Activity> activityProvider;
     @Inject
     private AuthorizationManager authzManager;
     @Inject
@@ -68,7 +69,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     public <T extends Activity> Set<T> getActivities(final Class<T> clazz) {
         // not calling onStartup. See UF-105.
-        return secure(iocManager.lookupBeans(clazz),
+        return secure(activityProvider.select(clazz),
                       true);
     }
 
@@ -200,7 +201,7 @@ public class ActivityManagerImpl implements ActivityManager {
                                              ex);
             }
             if (isDependentScope) {
-                iocManager.destroyBean(activity);
+                activityProvider.dispose(activity);
             }
         } else {
             throw new IllegalStateException("Activity " + activity + " is not currently in the started state");
@@ -234,9 +235,9 @@ public class ActivityManagerImpl implements ActivityManager {
         return beanDef.getScope();
     }
 
-    private <T extends Activity> Set<T> secure(final Collection<SyncBeanDef<T>> activityBeans,
+    private <T extends Activity> Set<T> secure(final Iterable<SyncBeanDef<T>> activityBeans,
                                                final boolean protectedAccess) {
-        final Set<T> activities = new HashSet<T>(activityBeans.size());
+        final Set<T> activities = new HashSet<>();
 
         for (final SyncBeanDef<T> activityBean : activityBeans) {
             if (!activityBean.isActivated()) {
@@ -249,7 +250,7 @@ public class ActivityManagerImpl implements ActivityManager {
             } else {
                 // Since user does not have permission, destroy bean to avoid memory leak
                 if (activityBean.getScope().equals(Dependent.class)) {
-                    iocManager.destroyBean(instance);
+                    activityProvider.dispose(instance);
                 }
             }
         }
@@ -304,7 +305,7 @@ public class ActivityManagerImpl implements ActivityManager {
      */
     private Set<Activity> startIfNecessary(Set<Activity> activities,
                                            PlaceRequest place) {
-        Set<Activity> validatedActivities = new HashSet<Activity>();
+        Set<Activity> validatedActivities = new HashSet<>();
         for (Activity activity : activities) {
             Activity validated = startIfNecessary(activity,
                                                   place);

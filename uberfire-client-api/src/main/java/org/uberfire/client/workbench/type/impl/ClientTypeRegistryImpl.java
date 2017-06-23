@@ -22,10 +22,10 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.client.workbench.type.ClientTypeRegistry;
@@ -36,20 +36,18 @@ import static java.util.Collections.unmodifiableList;
 @ApplicationScoped
 public class ClientTypeRegistryImpl implements ClientTypeRegistry {
 
-    private final SyncBeanManager iocManager;
-    private List<ClientResourceType> localResourceTypes = new ArrayList<ClientResourceType>();
+    private List<ClientResourceType> localResourceTypes = new ArrayList<>();
+    private ManagedInstance<ClientResourceType> clientResourceType;
 
     @Inject
-    public ClientTypeRegistryImpl(final SyncBeanManager iocManager) {
-        this.iocManager = iocManager;
+    public ClientTypeRegistryImpl(@Any ManagedInstance<ClientResourceType> clientResourceType) {
+        this.clientResourceType = clientResourceType;
     }
 
     @PostConstruct
     public void init() {
-        final Collection<SyncBeanDef<ClientResourceType>> availableTypes = iocManager.lookupBeans(ClientResourceType.class);
-
-        for (final SyncBeanDef<ClientResourceType> availableType : availableTypes) {
-            localResourceTypes.add(availableType.getInstance());
+        for (final ClientResourceType availableType : clientResourceType) {
+            localResourceTypes.add(availableType);
         }
 
         sort(localResourceTypes,

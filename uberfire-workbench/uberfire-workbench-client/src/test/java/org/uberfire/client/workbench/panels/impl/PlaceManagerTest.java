@@ -16,7 +16,6 @@
 
 package org.uberfire.client.workbench.panels.impl;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,7 +28,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.ioc.client.QualifierUtil;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ioc.client.container.SyncBeanManagerImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +44,6 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.AbstractPopupActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.client.mvp.BookmarkableUrlHelper;
 import org.uberfire.client.mvp.ContextActivity;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
@@ -117,8 +114,6 @@ public class PlaceManagerTest {
     @Mock
     PerspectiveActivity defaultPerspective;
     @Mock
-    SyncBeanManager iocManager;
-    @Mock
     UberfireDocks uberfireDock;
     @Mock
     Event<BeforeClosePlaceEvent> workbenchPartBeforeCloseEvent;
@@ -167,10 +162,10 @@ public class PlaceManagerTest {
         // as part of UF-61, we'll need to refactor ObservablePath and PathFactory so they ask for any beans they need as constructor params.
         final ObservablePath mockObservablePath = mock(ObservablePath.class);
         when(mockObservablePath.wrap(any(Path.class))).thenReturn(mockObservablePath);
-        IOC.getBeanManager().registerBean(new MockIOCBeanDef<ObservablePath, ObservablePath>(mockObservablePath,
+        IOC.getBeanManager().registerBean(new MockIOCBeanDef<>(mockObservablePath,
                                                                                              ObservablePath.class,
                                                                                              Dependent.class,
-                                                                                             new HashSet<Annotation>(
+                                                                                             new HashSet<>(
                                                                                                      Arrays.asList(
                                                                                                              QualifierUtil.DEFAULT_QUALIFIERS)),
                                                                                              "ObservablePath",

@@ -15,7 +15,6 @@
  */
 package org.uberfire.client.workbench;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
@@ -40,10 +40,10 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import org.jboss.errai.bus.client.api.ClientMessageBus;
 import org.jboss.errai.bus.client.framework.ClientMessageBusImpl;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.slf4j.Logger;
 import org.uberfire.backend.vfs.Path;
@@ -124,8 +124,8 @@ public class Workbench {
     @Inject
     private Event<ApplicationReadyEvent> appReady;
     private boolean isStandaloneMode = false;
-    @Inject
-    private SyncBeanManager iocManager;
+    @Inject @Any
+    private BeanDefProvider<PerspectiveActivity> perspectives;
     @Inject
     private PlaceManager placeManager;
     private final Command workbenchCloseCommand = new Command() {
@@ -294,7 +294,6 @@ public class Workbench {
 
         // Get the workbench's default perspective
         PerspectiveActivity defaultPerspective = null;
-        final Collection<SyncBeanDef<PerspectiveActivity>> perspectives = iocManager.lookupBeans(PerspectiveActivity.class);
 
         for (final SyncBeanDef<PerspectiveActivity> perspective : perspectives) {
             final PerspectiveActivity instance = perspective.getInstance();
@@ -302,12 +301,12 @@ public class Workbench {
             if (homePerspectiveId != null && homePerspectiveId.equals(instance.getIdentifier())) {
                 homePerspective = instance;
                 if (defaultPerspective != null) {
-                    iocManager.destroyBean(defaultPerspective);
+                    perspectives.dispose(defaultPerspective);
                 }
             } else if (instance.isDefault()) {
                 defaultPerspective = instance;
             } else {
-                iocManager.destroyBean(instance);
+                perspectives.dispose(instance);
             }
         }
         // The home perspective has always priority over the default

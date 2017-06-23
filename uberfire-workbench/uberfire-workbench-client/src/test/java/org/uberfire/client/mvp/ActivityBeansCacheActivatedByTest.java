@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
@@ -68,6 +70,8 @@ public class ActivityBeansCacheActivatedByTest {
     ActivityBeansCache activityBeansCache;
     @Mock
     SyncBeanManager iocManager;
+    @Mock
+    BeanDefProvider<Activity> activityProvider;
     private ActiveSplashScreenActivity activeSplashScreenActivity;
     private SyncBeanDef activeSplashScreenActivityBean;
     private SyncBeanDef nonActiveSplashScreenActivityBean;
@@ -104,12 +108,12 @@ public class ActivityBeansCacheActivatedByTest {
         nonActiveResourceActivityBean = mockResourceActivityBean(NonActiveResourceActivity.class,
                                                                  null);
 
-        Collection<SyncBeanDef<SplashScreenActivity>> splashScreenBeans = new ArrayList<SyncBeanDef<SplashScreenActivity>>();
+        Collection<SyncBeanDef<SplashScreenActivity>> splashScreenBeans = new ArrayList<>();
         splashScreenBeans.add(activeSplashScreenActivityBean);
         splashScreenBeans.add(nonActiveSplashScreenActivityBean);
 
         // all activity beans, including splash screens
-        Collection<SyncBeanDef<Activity>> allActivityBeans = new ArrayList<SyncBeanDef<Activity>>();
+        Collection<SyncBeanDef<Activity>> allActivityBeans = new ArrayList<>();
         allActivityBeans.add(activeSplashScreenActivityBean);
         allActivityBeans.add(nonActiveSplashScreenActivityBean);
         allActivityBeans.add(activeRegularActivityBean);
@@ -117,8 +121,7 @@ public class ActivityBeansCacheActivatedByTest {
         allActivityBeans.add(activeResourceActivityBean);
         allActivityBeans.add(nonActiveResourceActivityBean);
 
-        when(iocManager.lookupBeans(SplashScreenActivity.class)).thenReturn(splashScreenBeans);
-        when(iocManager.lookupBeans(Activity.class)).thenReturn(allActivityBeans);
+        when(activityProvider.iterator()).then(invocation -> allActivityBeans.iterator());
     }
 
     @Test

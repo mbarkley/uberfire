@@ -17,27 +17,27 @@
 package org.uberfire.client.exporter;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @ApplicationScoped
 public class PlaceManagerJSExporter implements UberfireJSExporter {
 
-    public static void goTo(final String place) {
-        final SyncBeanManager beanManager = IOC.getBeanManager();
-        final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
+    @Inject
+    private PlaceManager placeManager;
+
+    public void goTo(final String place) {
         placeManager.goTo(new DefaultPlaceRequest(place));
     }
 
     @Override
     public void export() {
-        publish();
+        publish(this);
     }
 
-    private native void publish() /*-{
-        $wnd.$goToPlace = @org.uberfire.client.exporter.PlaceManagerJSExporter::goTo(Ljava/lang/String;);
+    private native void publish(PlaceManagerJSExporter exporter) /*-{
+        $wnd.$goToPlace = exporter.@org.uberfire.client.exporter.PlaceManagerJSExporter::goTo(Ljava/lang/String;);
     }-*/;
 }

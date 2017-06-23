@@ -16,16 +16,25 @@
 
 package org.uberfire.ext.editor.commons.client.file;
 
-import org.jboss.errai.ioc.client.container.IOC;
+import javax.enterprise.context.Dependent;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 
+@Dependent
 public class RestoreUtil {
+
+    private ManagedInstance<ObservablePath> pathProvider;
+
+    public RestoreUtil(ManagedInstance<ObservablePath> pathProvider) {
+        this.pathProvider = pathProvider;
+    }
 
     public ObservablePath createObservablePath(Path path,
                                                String uri) {
-        return IOC.getBeanManager().lookupBean(ObservablePath.class).getInstance().wrap(
+        return pathProvider.get().wrap(
                 PathFactory.newPathBasedOn(path.getFileName(),
                                            uri,
                                            path));

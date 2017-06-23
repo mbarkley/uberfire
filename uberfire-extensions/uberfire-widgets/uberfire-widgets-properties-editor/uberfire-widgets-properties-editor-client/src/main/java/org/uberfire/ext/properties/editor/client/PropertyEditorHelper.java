@@ -20,6 +20,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
+
+import javax.enterprise.inject.Instance;
+
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Column;
@@ -39,9 +42,6 @@ import org.gwtbootstrap3.client.ui.constants.FormType;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.ext.properties.editor.client.fields.AbstractField;
 import org.uberfire.ext.properties.editor.client.fields.PropertyEditorFieldType;
 import org.uberfire.ext.properties.editor.client.widgets.AbstractPropertyEditorWidget;
@@ -57,20 +57,23 @@ public class PropertyEditorHelper {
     public static void extractEditorFrom(final PropertyEditorWidget propertyEditorWidget,
                                          final PanelGroup propertyMenu,
                                          final PropertyEditorEvent event,
-                                         final String propertyNameFilter) {
+                                         final String propertyNameFilter,
+                                         final Instance<AbstractField> fieldProvider) {
         propertyMenu.clear();
         for (PropertyEditorCategory category : event.getSortedProperties()) {
             createCategory(propertyEditorWidget,
                            propertyMenu,
                            category,
-                           propertyNameFilter);
+                           propertyNameFilter,
+                           fieldProvider);
         }
     }
 
     static void createCategory(final PropertyEditorWidget propertyEditorWidget,
                                final PanelGroup propertyMenu,
                                final PropertyEditorCategory category,
-                               final String propertyNameFilter) {
+                               final String propertyNameFilter,
+                               final Instance<AbstractField> fieldProvider) {
 
         Panel panel = GWT.create(Panel.class);
         PanelCollapse panelCollapse = createPanelCollapse(propertyEditorWidget,
@@ -88,7 +91,8 @@ public class PropertyEditorHelper {
                 categoryHasActiveChilds = true;
                 form.add(createItemsWidget(field,
                                            category,
-                                           form));
+                                           form,
+                                           fieldProvider));
             }
         }
         if (categoryHasActiveChilds) {
@@ -154,23 +158,27 @@ public class PropertyEditorHelper {
 
     public static void extractEditorFrom(final PropertyEditorWidget propertyEditorWidget,
                                          final PanelGroup propertyMenu,
-                                         final PropertyEditorEvent event) {
+                                         final PropertyEditorEvent event,
+                                         final Instance<AbstractField> fieldProvider) {
         extractEditorFrom(propertyEditorWidget,
                           propertyMenu,
                           event,
-                          "");
+                          "",
+                          fieldProvider);
     }
 
     static PropertyEditorItemsWidget createItemsWidget(final PropertyEditorFieldInfo field,
                                                        final PropertyEditorCategory category,
-                                                       final Form panelBody) {
+                                                       final Form panelBody,
+                                                       final Instance<AbstractField> fieldProvider) {
         PropertyEditorItemsWidget items = GWT.create(PropertyEditorItemsWidget.class);
 
         items.add(createLabel(field));
         items.add(createField(field,
                               items,
                               category,
-                              panelBody));
+                              panelBody,
+                              fieldProvider));
 
         return items;
     }
@@ -188,8 +196,9 @@ public class PropertyEditorHelper {
 
     static PropertyEditorItemWidget createField(final PropertyEditorFieldInfo field,
                                                 final PropertyEditorItemsWidget parent,
-                                                PropertyEditorCategory category,
-                                                Form panelBody) {
+                                                final PropertyEditorCategory category,
+                                                final Form panelBody,
+                                                final Instance<AbstractField> fieldProvider) {
         PropertyEditorItemWidget itemWidget = GWT.create(PropertyEditorItemWidget.class);
         InputGroup content = GWT.create(InputGroup.class);
 
@@ -197,9 +206,9 @@ public class PropertyEditorHelper {
 
         Widget fieldWidget;
         if (editorFieldType == PropertyEditorFieldType.CUSTOM) {
-            Class<?> widgetClass = ((CustomPropertyEditorFieldInfo) field).getCustomEditorClass();
-            fieldWidget = getWidget(field,
-                                    widgetClass);
+            // FIXME this API should be typesafe, so that we guarantee that the type returned has the "widget" method on AbstractField.
+            Class<? extends AbstractField> widgetClass = (Class) ((CustomPropertyEditorFieldInfo) field).getCustomEditorClass();
+            fieldWidget = getWidget(field, widgetClass, fieldProvider);
         } else {
             fieldWidget = editorFieldType.widget(field);
         }
@@ -237,11 +246,10 @@ public class PropertyEditorHelper {
         return groupButton;
     }
 
-    private static Widget getWidget(final PropertyEditorFieldInfo property,
-                                    final Class fieldType) {
-        SyncBeanManager beanManager = IOC.getBeanManager();
-        SyncBeanDef<?> iocBeanDef = beanManager.lookupBean(fieldType);
-        AbstractField field = (AbstractField) iocBeanDef.getInstance();
+    private static <F extends AbstractField> Widget getWidget(final PropertyEditorFieldInfo property,
+                                                              final Class<F> fieldType,
+                                                              final Instance<AbstractField> provider) {
+        F field = provider.select(fieldType).get();
         return field.widget(property);
     }
 

@@ -29,16 +29,16 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
@@ -99,8 +99,6 @@ public class ShowcaseEntryPoint {
             "welcome"
     );
     @Inject
-    private SyncBeanManager manager;
-    @Inject
     private WorkbenchMenuBar menubar;
     @Inject
     private UserMenu userMenu;
@@ -120,6 +118,13 @@ public class ShowcaseEntryPoint {
     private ErrorPopupView errorPopupView;
     @Inject
     private PatternFlyEntryPoint pflyEntryPoint;
+    @Inject
+    private ManagedInstance<WorkbenchViewModeSwitcherMenuBuilder> viewModeSwitcherMenuBuilder;
+    @Inject
+    private ManagedInstance<CustomSplashHelp> customSplashHelp;
+    @Inject
+    @Any
+    private ManagedInstance<PerspectiveActivity> perspectives;
 
     public static List<MenuItem> getScreens() {
         final List<MenuItem> screens = new ArrayList<>();
@@ -196,7 +201,7 @@ public class ShowcaseEntryPoint {
                     }
                 })
                         .endMenu()
-                        .newTopLevelCustomMenu(manager.lookupBean(WorkbenchViewModeSwitcherMenuBuilder.class).getInstance())
+                        .newTopLevelCustomMenu(viewModeSwitcherMenuBuilder.get())
                         .endMenu()
                         .build());
 
@@ -208,7 +213,7 @@ public class ShowcaseEntryPoint {
                             Window.alert("Hello from status!");
                         })
                         .endMenu()
-                        .newTopLevelCustomMenu(manager.lookupBean(CustomSplashHelp.class).getInstance())
+                        .newTopLevelCustomMenu(customSplashHelp.get())
                         .endMenu()
                         .newTopLevelMenu("Simple Popup")
                         .respondsWith(() -> placeManager.goTo(new DefaultPlaceRequest(SimplePopUp.SCREEN_ID)))
@@ -237,17 +242,16 @@ public class ShowcaseEntryPoint {
 
     private PerspectiveActivity getDefaultPerspectiveActivity() {
         PerspectiveActivity defaultPerspective = null;
-        final Collection<SyncBeanDef<PerspectiveActivity>> perspectives = manager.lookupBeans(PerspectiveActivity.class);
-        final Iterator<SyncBeanDef<PerspectiveActivity>> perspectivesIterator = perspectives.iterator();
+        final Iterator<PerspectiveActivity> perspectivesIterator = perspectives.iterator();
 
         while (perspectivesIterator.hasNext()) {
-            final SyncBeanDef<PerspectiveActivity> perspective = perspectivesIterator.next();
-            final PerspectiveActivity instance = perspective.getInstance();
+            final PerspectiveActivity instance = perspectivesIterator.next();
             if (instance.isDefault()) {
                 defaultPerspective = instance;
                 break;
             } else {
-                manager.destroyBean(instance);
+                // Destroys bean
+                perspectivesIterator.remove();
             }
         }
         return defaultPerspective;

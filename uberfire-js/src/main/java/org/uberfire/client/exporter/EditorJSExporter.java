@@ -21,9 +21,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.jboss.errai.ioc.client.container.IOC;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.editor.JSEditorActivity;
 import org.uberfire.client.editor.JSNativeEditor;
@@ -37,17 +39,29 @@ import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 @ApplicationScoped
 public class EditorJSExporter implements UberfireJSExporter {
 
-    public static void registerEditor(final Object _obj) {
+    @Inject
+    private ActivityBeansCache activityBeansCache;
+
+    @Inject
+    private ManagedInstance<JSNativeEditor> nativeEditor;
+
+    @Inject
+    private PlaceManager placeManager;
+
+    /*
+     * Only use this for looking up dynamically added JS beans!
+     * All beans implemneted in GWT should be looked up via ManagedInstance
+     * so we can determine reachability at compile-time.
+     */
+    @Inject
+    private SyncBeanManager beanManager;
+
+    public void registerEditor(final Object _obj) {
         final JavaScriptObject obj = (JavaScriptObject) _obj;
         if (JSNativeEditor.hasStringProperty(obj,
                                              "id")) {
-            final SyncBeanManager beanManager = IOC.getBeanManager();
-            final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
-
-            final JSNativeEditor newNativeEditor = beanManager.lookupBean(JSNativeEditor.class).getInstance();
+            final JSNativeEditor newNativeEditor = nativeEditor.get();
             newNativeEditor.build(obj);
-
-            PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
 
             JSEditorActivity activity = JSExporterUtils.findActivityIfExists(beanManager,
                                                                              newNativeEditor.getId(),
@@ -78,8 +92,8 @@ public class EditorJSExporter implements UberfireJSExporter {
         activity = new JSEditorActivity(newNativeEditor,
                                         placeManager);
 
-        final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
-        final SingletonBeanDef<JSEditorActivity, JSEditorActivity> beanDef = new SingletonBeanDef<JSEditorActivity, JSEditorActivity>(activity,
+        final Set<Annotation> qualifiers = new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS));
+        final SingletonBeanDef<JSEditorActivity, JSEditorActivity> beanDef = new SingletonBeanDef<>(activity,
                                                                                                                                       JSEditorActivity.class,
                                                                                                                                       qualifiers,
                                                                                                                                       newNativeEditor.getId(),
@@ -99,11 +113,11 @@ public class EditorJSExporter implements UberfireJSExporter {
 
     @Override
     public void export() {
-        publish();
+        publish(this);
     }
 
-    private native void publish() /*-{
-        $wnd.$registerEditor = @org.uberfire.client.exporter.EditorJSExporter::registerEditor(Ljava/lang/Object;);
+    private native void publish(EditorJSExporter exporter) /*-{
+        $wnd.$registerEditor = exporter.@org.uberfire.client.exporter.EditorJSExporter::registerEditor(Ljava/lang/Object;);
     }-*/;
 
     public static class EditorResourceTypeNotFound extends RuntimeException {

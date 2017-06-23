@@ -16,13 +16,10 @@
 
 package org.uberfire.client.workbench;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 
 /**
  * Used to discover alternative {@link org.uberfire.client.workbench.WorkbenchLayout}'s.
@@ -32,26 +29,20 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 @ApplicationScoped
 public class LayoutSelection {
 
-    static final AlternativeLayout altLayout = new AlternativeLayout() {
-        @Override
-        public Class<? extends Annotation> annotationType() {
-            return AlternativeLayout.class;
-        }
-    };
     @Inject
-    private SyncBeanManager iocManager;
+    private ManagedInstance<WorkbenchLayout> defaultLayoutProvider;
+
+    @Inject @AlternativeLayout
+    private ManagedInstance<WorkbenchLayout> alternativeLayoutProvider;
 
     public WorkbenchLayout get() {
         //FIXME: this alternatives process doesn't work
         WorkbenchLayout layout = null;
 
-        Collection<SyncBeanDef<WorkbenchLayout>> beanDefs = iocManager.lookupBeans(WorkbenchLayout.class,
-                                                                                   altLayout);
-        if (beanDefs.size() > 0) {
-            SyncBeanDef<WorkbenchLayout> alt = beanDefs.iterator().next();
-            layout = alt.getInstance();
+        if (!alternativeLayoutProvider.isUnsatisfied()) {
+            layout = alternativeLayoutProvider.iterator().next();
         } else {
-            layout = iocManager.lookupBean(WorkbenchLayout.class).getInstance();
+            layout = defaultLayoutProvider.get();
         }
         return layout;
     }

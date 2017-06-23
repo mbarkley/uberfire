@@ -21,9 +21,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.jboss.errai.ioc.client.container.IOC;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -36,19 +38,28 @@ import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @ApplicationScoped
 public class SplashScreenJSExporter implements UberfireJSExporter {
+    
+    @Inject
+    private SyncBeanManager beanManager;
+    
+    @Inject
+    private ActivityBeansCache activityBeansCache;
+    
+    @Inject
+    private ManagedInstance<JSNativeSplashScreen> splashScreen;
+    
+    @Inject
+    private ManagedInstance<SplashView> splashView;
 
-    public static void registerSplashScreen(final Object _obj) {
+    public void registerSplashScreen(final Object _obj) {
         final JavaScriptObject obj = (JavaScriptObject) _obj;
 
         if (JSNativeSplashScreen.hasStringProperty(obj,
                                                    "id") && JSNativeSplashScreen.hasTemplate(obj)) {
-            final SyncBeanManager beanManager = IOC.getBeanManager();
-            final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
-
-            final JSNativeSplashScreen newNativePlugin = beanManager.lookupBean(JSNativeSplashScreen.class).getInstance();
+            final JSNativeSplashScreen newNativePlugin = splashScreen.get();
             newNativePlugin.build(obj);
 
-            final SplashView splashView = beanManager.lookupBean(SplashView.class).getInstance();
+            final SplashView splashView = this.splashView.get();
 
             JSSplashScreenActivity activity = JSExporterUtils.findActivityIfExists(beanManager,
                                                                                    newNativePlugin.getId(),
@@ -98,10 +109,10 @@ public class SplashScreenJSExporter implements UberfireJSExporter {
 
     @Override
     public void export() {
-        publish();
+        publish(this);
     }
 
-    private native void publish() /*-{
-        $wnd.$registerSplashScreen = @org.uberfire.client.exporter.SplashScreenJSExporter::registerSplashScreen(Ljava/lang/Object;);
+    private native void publish(SplashScreenJSExporter exporter) /*-{
+        $wnd.$registerSplashScreen = exporter.@org.uberfire.client.exporter.SplashScreenJSExporter::registerSplashScreen(Ljava/lang/Object;);
     }-*/;
 }
