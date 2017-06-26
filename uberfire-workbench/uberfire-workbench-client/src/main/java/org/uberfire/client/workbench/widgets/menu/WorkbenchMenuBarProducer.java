@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Window;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PerspectiveManager;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
 import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
@@ -38,6 +39,7 @@ public class WorkbenchMenuBarProducer {
     private User identity;
     private WorkbenchMenuBarPresenter.View view;
     private WorkbenchMenuBarPresenter instance = null;
+    private PlaceManager placeManager;
 
     public WorkbenchMenuBarProducer() {
         //CDI proxy
@@ -47,11 +49,13 @@ public class WorkbenchMenuBarProducer {
     public WorkbenchMenuBarProducer(final AuthorizationManager authzManager,
                                     final PerspectiveManager perspectiveManager,
                                     final ActivityManager activityManager,
+                                    final PlaceManager placeManager,
                                     final User identity,
                                     final WorkbenchMenuBarPresenter.View view) {
         this.authzManager = authzManager;
         this.perspectiveManager = perspectiveManager;
         this.activityManager = activityManager;
+        this.placeManager = placeManager;
         this.identity = identity;
         this.view = view;
     }
@@ -72,6 +76,7 @@ public class WorkbenchMenuBarProducer {
         return new WorkbenchMenuBarPresenter(authzManager,
                                              perspectiveManager,
                                              activityManager,
+                                             placeManager,
                                              identity,
                                              view);
     }
@@ -80,6 +85,7 @@ public class WorkbenchMenuBarProducer {
         return new WorkbenchMenuBarStandalonePresenter(authzManager,
                                                        perspectiveManager,
                                                        activityManager,
+                                                       placeManager,
                                                        identity,
                                                        view);
     }

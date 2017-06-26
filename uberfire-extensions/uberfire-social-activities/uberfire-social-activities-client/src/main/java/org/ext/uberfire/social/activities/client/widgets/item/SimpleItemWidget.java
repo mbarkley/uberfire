@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -24,6 +24,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import org.ext.uberfire.social.activities.client.user.SocialUserImageProvider;
 import org.ext.uberfire.social.activities.client.widgets.item.bundle.SocialBundleHelper;
 import org.ext.uberfire.social.activities.client.widgets.item.model.LinkCommandParams;
@@ -37,10 +41,10 @@ import org.gwtbootstrap3.client.ui.ImageAnchor;
 import org.gwtbootstrap3.client.ui.constants.Pull;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.gwtbootstrap3.client.ui.html.Text;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.uberfire.client.resources.UberfireResources;
 import org.uberfire.client.workbench.type.ClientResourceType;
 
+@Dependent
 public class SimpleItemWidget extends Composite {
 
     private static final Image GENERIC_FILE_IMAGE = new Image(UberfireResources.INSTANCE.images().typeGenericFile());
@@ -51,11 +55,10 @@ public class SimpleItemWidget extends Composite {
     Heading heading;
     @UiField
     Paragraph desc;
+    @Inject
     private SocialUserImageProvider imageProvider;
-
-    public SimpleItemWidget() {
-        imageProvider = IOC.getBeanManager().lookupBean(SocialUserImageProvider.class).getInstance();
-    }
+    @Inject
+    private SocialBundleHelper socialBundleHelper;
 
     public void init(SimpleItemWidgetModel model) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -83,7 +86,7 @@ public class SimpleItemWidget extends Composite {
 
     private Widget createText(SimpleItemWidgetModel model) {
         final StringBuilder sb = new StringBuilder(" ");
-        sb.append(SocialBundleHelper.getItemDescription(model.getItemDescription()));
+        sb.append(socialBundleHelper.getItemDescription(model.getItemDescription()));
         sb.append(" ");
         sb.append(SocialDateFormatter.format(model.getTimestamp()));
         return new Text(sb.toString());

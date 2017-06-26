@@ -23,7 +23,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.ioc.client.container.IOC;
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.backend.vfs.IsVersioned;
 import org.uberfire.backend.vfs.ObservablePath;
@@ -51,14 +51,20 @@ public class ObservablePathImpl implements ObservablePath,
     @Inject
     private transient SessionInfo sessionInfo;
 
-    private transient List<Command> onRenameCommand = new ArrayList<Command>();
-    private transient List<Command> onDeleteCommand = new ArrayList<Command>();
-    private transient List<Command> onUpdateCommand = new ArrayList<Command>();
-    private transient List<Command> onCopyCommand = new ArrayList<Command>();
-    private transient List<ParameterizedCommand<OnConcurrentRenameEvent>> onConcurrentRenameCommand = new ArrayList<ParameterizedCommand<OnConcurrentRenameEvent>>();
-    private transient List<ParameterizedCommand<OnConcurrentDelete>> onConcurrentDeleteCommand = new ArrayList<ParameterizedCommand<OnConcurrentDelete>>();
-    private transient List<ParameterizedCommand<OnConcurrentUpdateEvent>> onConcurrentUpdateCommand = new ArrayList<ParameterizedCommand<OnConcurrentUpdateEvent>>();
-    private transient List<ParameterizedCommand<OnConcurrentCopyEvent>> onConcurrentCopyCommand = new ArrayList<ParameterizedCommand<OnConcurrentCopyEvent>>();
+    /*
+     * This disposer is for type Object so it is satisfied in CDI.
+     */
+    @Inject
+    private transient Disposer<Object> pathDisposer;
+
+    private transient List<Command> onRenameCommand = new ArrayList<>();
+    private transient List<Command> onDeleteCommand = new ArrayList<>();
+    private transient List<Command> onUpdateCommand = new ArrayList<>();
+    private transient List<Command> onCopyCommand = new ArrayList<>();
+    private transient List<ParameterizedCommand<OnConcurrentRenameEvent>> onConcurrentRenameCommand = new ArrayList<>();
+    private transient List<ParameterizedCommand<OnConcurrentDelete>> onConcurrentDeleteCommand = new ArrayList<>();
+    private transient List<ParameterizedCommand<OnConcurrentUpdateEvent>> onConcurrentUpdateCommand = new ArrayList<>();
+    private transient List<ParameterizedCommand<OnConcurrentCopyEvent>> onConcurrentCopyCommand = new ArrayList<>();
 
     public ObservablePathImpl() {
     }
@@ -100,6 +106,7 @@ public class ObservablePathImpl implements ObservablePath,
     // Key for Activity and Place Management). However re-hydration stores the PartDefinition in a HashSet using the incorrect hashCode. By not
     // storing the "original" in the serialized form we can guarantee hashCodes in de-serialized PerspectiveDefinitions remain immutable.
     // See https://bugzilla.redhat.com/show_bug.cgi?id=1200472 for the re-producer.
+    @Override
     public Path getOriginal() {
         if (this.original == null) {
             wrap(this.path);
@@ -177,8 +184,8 @@ public class ObservablePathImpl implements ObservablePath,
         onConcurrentDeleteCommand.clear();
         onConcurrentUpdateCommand.clear();
         onConcurrentCopyCommand.clear();
-        if (IOC.getBeanManager() != null) {
-            IOC.getBeanManager().destroyBean(this);
+        if (pathDisposer != null) {
+            pathDisposer.dispose((Object) this);
         }
     }
 

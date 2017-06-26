@@ -25,6 +25,7 @@ import org.ext.uberfire.social.activities.client.widgets.timeline.regular.model.
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -42,6 +43,8 @@ public class SocialTimelineView implements IsElement,
     @Inject
     @DataField
     Button newEvent;
+    @Inject
+    ManagedInstance<SocialTimelineWidget> timelineWidgetProvider;
     private SocialTimelinePresenter presenter;
 
     @EventHandler("newEvent")
@@ -52,7 +55,7 @@ public class SocialTimelineView implements IsElement,
     @Override
     public void setupWidget(SocialTimelineWidgetModel model) {
         DOMUtil.removeAllChildren(panelContainer);
-        final SocialTimelineWidget socialTimelineWidget = new SocialTimelineWidget();
+        final SocialTimelineWidget socialTimelineWidget = timelineWidgetProvider.get();
         socialTimelineWidget.init(model);
         DOMUtil.appendWidgetToElement(panelContainer,
                                       socialTimelineWidget);

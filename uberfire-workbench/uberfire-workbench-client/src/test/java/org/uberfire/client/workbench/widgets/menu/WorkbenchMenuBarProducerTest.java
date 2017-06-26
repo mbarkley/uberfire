@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PerspectiveManager;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
 import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
@@ -44,6 +45,9 @@ public class WorkbenchMenuBarProducerTest {
 
     @Mock
     private ActivityManager activityManager;
+
+    @Mock
+    private PlaceManager placeManager;
 
     @Mock
     private User identity;
@@ -74,6 +78,7 @@ public class WorkbenchMenuBarProducerTest {
         producer = new WorkbenchMenuBarProducer(authzManager,
                                                 perspectiveManager,
                                                 activityManager,
+                                                placeManager,
                                                 identity,
                                                 view) {
             @Override

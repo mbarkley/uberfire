@@ -28,6 +28,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutRow;
@@ -38,7 +39,6 @@ import org.uberfire.ext.layout.editor.client.components.rows.EmptyDropRow;
 import org.uberfire.ext.layout.editor.client.components.rows.Row;
 import org.uberfire.ext.layout.editor.client.components.rows.RowDnDEvent;
 import org.uberfire.ext.layout.editor.client.components.rows.RowDrop;
-import org.uberfire.ext.layout.editor.client.infra.BeanHelper;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.LayoutTemplateAdapter;
 import org.uberfire.ext.layout.editor.client.infra.RowResizeEvent;
@@ -62,16 +62,19 @@ public class Container {
     private Map<String, String> properties = new HashMap<>();
     private Event<ComponentDropEvent> componentDropEvent;
     private LayoutTemplate.Style pageStyle = LayoutTemplate.Style.FLUID;
+    private Disposer<Object> disposer;
 
     @Inject
     public Container(final View view,
                      Instance<Row> rowInstance,
                      Instance<EmptyDropRow> emptyDropRowInstance,
-                     Event<ComponentDropEvent> componentDropEvent) {
+                     Event<ComponentDropEvent> componentDropEvent,
+                     Disposer<Object> disposer) {
         this.rowInstance = rowInstance;
         this.emptyDropRowInstance = emptyDropRowInstance;
         this.view = view;
         this.componentDropEvent = componentDropEvent;
+        this.disposer = disposer;
         this.id = idGenerator.createContainerID();
     }
 
@@ -551,7 +554,7 @@ public class Container {
     }
 
     protected void destroy(Object o) {
-        BeanHelper.destroy(o);
+        disposer.dispose(o);
     }
 
     public LayoutTemplate.Style getPageStyle() {

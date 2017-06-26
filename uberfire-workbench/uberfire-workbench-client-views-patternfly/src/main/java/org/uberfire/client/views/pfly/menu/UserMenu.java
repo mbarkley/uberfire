@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.User.StandardUserProperties;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -45,6 +46,8 @@ public class UserMenu implements MenuFactory.CustomMenuBuilder,
     private User user;
     @Inject
     private AuthorizationManager authzManager;
+    @Inject
+    private PlaceManager placeManager;
 
     @PostConstruct
     protected void setup() {
@@ -55,7 +58,7 @@ public class UserMenu implements MenuFactory.CustomMenuBuilder,
     public void addMenus(final Menus menus) {
         menus.accept(new AuthFilterMenuVisitor(authzManager,
                                                user,
-                                               new DropdownMenuVisitor(userMenuView)));
+                                               new DropdownMenuVisitor(userMenuView, placeManager)));
     }
 
     /**

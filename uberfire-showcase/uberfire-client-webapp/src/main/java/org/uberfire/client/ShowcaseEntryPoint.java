@@ -33,9 +33,10 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.bus.client.api.ClientMessageBus;
+import org.jboss.errai.ioc.client.QualifierUtil;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -78,6 +79,10 @@ public class ShowcaseEntryPoint {
     @Inject
     @Any
     private ManagedInstance<PerspectiveActivity> perspectives;
+
+    @Inject
+    @Any
+    private BeanDefProvider<WorkbenchScreenActivity> screens;
 
     @Inject
     private Event<DumpLayout> dumpLayoutEvent;
@@ -130,12 +135,13 @@ public class ShowcaseEntryPoint {
         final List<MenuItem> screens = new ArrayList<>();
         final List<String> names = new ArrayList<>();
 
-        for (final IOCBeanDef<WorkbenchScreenActivity> _menuItem : IOC.getBeanManager().lookupBeans(WorkbenchScreenActivity.class)) {
+        for (final IOCBeanDef<WorkbenchScreenActivity> _menuItem : this.screens) {
             final String name;
             if (_menuItem.getBeanClass().equals(JSWorkbenchScreenActivity.class)) {
                 name = _menuItem.getName();
             } else {
-                name = IOC.getBeanManager().lookupBean(_menuItem.getBeanClass()).getName();
+                Class<? extends WorkbenchScreenActivity> beanClass = (Class) _menuItem.getBeanClass();
+                name = this.screens.select(beanClass, QualifierUtil.DEFAULT_ANNOTATION).get().getName();
             }
             names.add(name);
         }

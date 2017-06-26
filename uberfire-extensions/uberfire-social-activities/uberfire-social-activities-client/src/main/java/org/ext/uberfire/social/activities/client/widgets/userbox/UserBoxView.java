@@ -17,6 +17,7 @@
 package org.ext.uberfire.social.activities.client.widgets.userbox;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -40,7 +41,6 @@ import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.ThumbnailPanel;
 import org.gwtbootstrap3.client.ui.constants.ImageType;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 
@@ -57,11 +57,8 @@ public class UserBoxView extends Composite {
     Heading username;
     @UiField
     Paragraph desc;
-    private SocialUserImageProvider userImageProvider;
-
-    public UserBoxView() {
-        userImageProvider = IOC.getBeanManager().lookupBean(SocialUserImageProvider.class).getInstance();
-    }
+    @Inject
+    SocialUserImageProvider userImageProvider;
 
     public void init(final SocialUser socialUser,
                      final RelationType type,

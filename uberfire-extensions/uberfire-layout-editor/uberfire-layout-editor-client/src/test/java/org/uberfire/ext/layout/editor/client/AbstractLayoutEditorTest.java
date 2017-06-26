@@ -25,6 +25,8 @@ import javax.enterprise.inject.Instance;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -76,6 +78,10 @@ public abstract class AbstractLayoutEditorTest {
     protected EventSourceMock<ComponentDropEvent> componentDropEventMock;
     @Mock
     protected EventSourceMock<ComponentRemovedEvent> componentRemoveEventMock;
+
+    @Mock
+    protected Disposer<Object> disposer;
+
     protected EmptyDropRow emptyDropRow = new EmptyDropRow(mock(EmptyDropRow.View.class),
                                                            helper);
     protected DnDManager dnDManager = new DnDManager();
@@ -86,7 +92,8 @@ public abstract class AbstractLayoutEditorTest {
         return new Container(view,
                              rowInstance,
                              emptyDropRowInstance,
-                             componentDropEventMock) {
+                             componentDropEventMock,
+                             disposer) {
             private UniqueIDGenerator idGenerator = new UniqueIDGenerator();
 
             @Override
@@ -102,10 +109,6 @@ public abstract class AbstractLayoutEditorTest {
                           LayoutTemplate.Style.PAGE);
                 return row;
             }
-
-            @Override
-            protected void destroy(Object o) {
-            }
         };
     }
 
@@ -117,7 +120,8 @@ public abstract class AbstractLayoutEditorTest {
                        helper,
                        componentDropEventMock,
                        componentRemoveEventMock,
-                       null) {
+                       null,
+                       disposer) {
             private UniqueIDGenerator idGenerator = new UniqueIDGenerator();
 
             @Override
@@ -143,14 +147,11 @@ public abstract class AbstractLayoutEditorTest {
                         null,
                         dnDManager,
                         helper,
-                        mock(Event.class)) {
+                        mock(Event.class),
+                        disposer) {
                     @Override
                     protected Row createInstanceRow() {
                         return rowProducer();
-                    }
-
-                    @Override
-                    protected void destroy(Object o) {
                     }
                 };
                 columnWithComponents.setId(idGenerator.createColumnID(getId()));

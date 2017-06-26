@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,16 +15,9 @@
 
 package org.ext.uberfire.social.activities.client.widgets.item;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import org.ext.uberfire.social.activities.client.user.SocialUserImageProvider;
 import org.ext.uberfire.social.activities.client.widgets.item.bundle.SocialBundleHelper;
 import org.ext.uberfire.social.activities.client.widgets.timeline.regular.model.UpdateItem;
@@ -35,8 +28,19 @@ import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.ImageAnchor;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.gwtbootstrap3.client.ui.html.Text;
-import org.jboss.errai.ioc.client.container.IOC;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
+
+@Dependent
 public class CommentRowWidget extends Composite {
 
     private final static DateTimeFormat FORMATTER = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm:ss");
@@ -52,15 +56,11 @@ public class CommentRowWidget extends Composite {
     @UiField
     Heading heading;
 
+    @Inject
     SocialUserImageProvider imageProvider;
 
-    public CommentRowWidget() {
-        imageProvider = getSocialUserImageProvider();
-    }
-
-    SocialUserImageProvider getSocialUserImageProvider() {
-        return IOC.getBeanManager().lookupBean(SocialUserImageProvider.class).getInstance();
-    }
+    @Inject
+    SocialBundleHelper bundleHelper;
 
     public void init(UpdateItem model) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -79,7 +79,7 @@ public class CommentRowWidget extends Composite {
 
     private void createAdditionalInfo(SocialActivitiesEvent event) {
         final StringBuilder comment = new StringBuilder();
-        comment.append(SocialBundleHelper.getItemDescription(event.getAdicionalInfos()));
+        comment.append(bundleHelper.getItemDescription(event.getAdicionalInfos()));
         comment.append(" ");
         comment.append(FORMATTER.format(event.getTimestamp()));
         comment.append(" ");

@@ -50,11 +50,10 @@ public class ScreenLayoutDragComponentTest {
 
     @Before
     public void setup() {
-        screenLayoutDragComponent = spy(new ScreenLayoutDragComponent(placeManager));
-
         activityBeansInfo = spy(new ActivityBeansInfo());
+        screenLayoutDragComponent = spy(new ScreenLayoutDragComponent(placeManager, activityBeansInfo));
 
-        List<String> availableWorkbenchScreensIds = new ArrayList<String>();
+        List<String> availableWorkbenchScreensIds = new ArrayList<>();
         availableWorkbenchScreensIds.add("screen1");
         availableWorkbenchScreensIds.add("screen2");
         availableWorkbenchScreensIds.add("screen3");

@@ -16,8 +16,8 @@
 
 package org.uberfire.client.exporter;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import org.jboss.errai.common.client.api.Caller;
@@ -25,7 +25,11 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class VFSJSExporter implements UberfireJSExporter {
 
     @Inject

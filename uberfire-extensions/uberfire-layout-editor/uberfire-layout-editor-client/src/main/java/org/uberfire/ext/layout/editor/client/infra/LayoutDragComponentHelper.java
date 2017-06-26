@@ -17,42 +17,37 @@
 package org.uberfire.ext.layout.editor.client.infra;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.Factory;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManagerImpl;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.client.api.HasDragAndDropSettings;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponent;
 
-@ApplicationScoped
+/*
+ * Must stay an entry point so that it is considered reachable (is looked up statically).
+ */
+@EntryPoint
 public class LayoutDragComponentHelper {
 
     private DndDataJSONConverter converter = new DndDataJSONConverter();
     private List<Object> instances = new ArrayList<>();
 
-    @PreDestroy
-    public void destroy() {
-        for (Object instance : instances) {
-            destroy(instance);
-        }
-    }
+    @Inject
+    @Any
+    private ManagedInstance<LayoutDragComponent> dragComponentProvider;
 
     public LayoutDragComponent lookupDragTypeBean(String dragTypeClassName) {
         return lookupBean(dragTypeClassName);
     }
 
     private LayoutDragComponent lookupBean(String dragTypeClassName) {
-        SyncBeanManagerImpl beanManager = (SyncBeanManagerImpl) IOC.getBeanManager();
-        Collection<SyncBeanDef<LayoutDragComponent>> iocBeanDefs = beanManager.lookupBeans(LayoutDragComponent.class);
-        for (SyncBeanDef<LayoutDragComponent> iocBeanDef : iocBeanDefs) {
-            LayoutDragComponent instance = iocBeanDef.getInstance();
+        for (LayoutDragComponent instance : dragComponentProvider) {
             instances.add(instance);
             if (getRealBeanClass(instance).equalsIgnoreCase(dragTypeClassName)) {
                 return instance;
@@ -89,13 +84,5 @@ public class LayoutDragComponentHelper {
     private LayoutDragComponent extractComponent(String dropData) {
         return converter
                 .readJSONDragComponent(dropData);
-    }
-
-    private boolean hasComponent(LayoutComponent component) {
-        return component != null;
-    }
-
-    protected void destroy(Object o) {
-        BeanHelper.destroy(o);
     }
 }

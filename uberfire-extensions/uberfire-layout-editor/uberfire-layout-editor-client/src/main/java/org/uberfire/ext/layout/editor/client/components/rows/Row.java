@@ -26,6 +26,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutColumn;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
@@ -36,7 +37,6 @@ import org.uberfire.ext.layout.editor.client.api.ComponentRemovedEvent;
 import org.uberfire.ext.layout.editor.client.components.columns.Column;
 import org.uberfire.ext.layout.editor.client.components.columns.ColumnWithComponents;
 import org.uberfire.ext.layout.editor.client.components.columns.ComponentColumn;
-import org.uberfire.ext.layout.editor.client.infra.BeanHelper;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.ColumnResizeEvent;
 import org.uberfire.ext.layout.editor.client.infra.DnDManager;
@@ -59,7 +59,7 @@ public class Row {
 
     private View view;
 
-    private List<Column> columns = new ArrayList<Column>();
+    private List<Column> columns = new ArrayList<>();
 
     private Instance<ComponentColumn> columnInstance;
 
@@ -83,6 +83,7 @@ public class Row {
     private Integer height;
     private boolean canResizeUp;
     private boolean canResizeDown;
+    private Disposer<Object> disposer;
 
     @Inject
     public Row(View view,
@@ -92,7 +93,8 @@ public class Row {
                LayoutDragComponentHelper layoutDragComponentHelper,
                Event<ComponentDropEvent> componentDropEvent,
                Event<ComponentRemovedEvent> componentRemovedEvent,
-               Event<RowResizeEvent> rowResizeEvent) {
+               Event<RowResizeEvent> rowResizeEvent,
+               Disposer<Object> disposer) {
 
         this.view = view;
         this.columnInstance = columnInstance;
@@ -102,6 +104,7 @@ public class Row {
         this.componentDropEvent = componentDropEvent;
         this.componentRemovedEvent = componentRemovedEvent;
         this.rowResizeEvent = rowResizeEvent;
+        this.disposer = disposer;
     }
 
     public void init(ParameterizedCommand<RowDrop> dropOnRowCommand,
@@ -836,7 +839,7 @@ public class Row {
     }
 
     protected void destroy(Object o) {
-        BeanHelper.destroy(o);
+        disposer.dispose(o);
     }
 
     public void calculateSizeChilds() {

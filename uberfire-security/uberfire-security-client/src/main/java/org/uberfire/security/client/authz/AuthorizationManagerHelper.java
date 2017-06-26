@@ -16,9 +16,9 @@
 
 package org.uberfire.security.client.authz;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.security.Resource;
@@ -31,7 +31,12 @@ import org.uberfire.security.authz.VotingStrategy;
 import org.uberfire.security.impl.authz.DefaultResourceAction;
 import org.uberfire.security.impl.authz.DefaultResourceType;
 
-@ApplicationScoped
+/**
+ * <p>
+ * This bean is looked up dynamically so it must be kept as an entry point to ensure that
+ * Errai always considers it reachable.
+ */
+@EntryPoint
 public class AuthorizationManagerHelper {
 
     private AuthorizationManager authorizationManager;

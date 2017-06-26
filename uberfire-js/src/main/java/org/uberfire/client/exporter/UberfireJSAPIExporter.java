@@ -16,15 +16,13 @@
 
 package org.uberfire.client.exporter;
 
-import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.EntryPoint;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.workbench.events.UberfireJSAPIReadyEvent;
 
 @EntryPoint
@@ -32,15 +30,16 @@ public class UberfireJSAPIExporter {
 
     @Inject
     Event<UberfireJSAPIReadyEvent> jsapiReadyEvent;
+    @Inject
+    @Any
+    ManagedInstance<UberfireJSExporter> jsExporterProvider;
 
     @PostConstruct
     public void export() {
-        Collection<SyncBeanDef<UberfireJSExporter>> jsAPIs = IOC.getBeanManager().lookupBeans(UberfireJSExporter.class);
-        for (SyncBeanDef<UberfireJSExporter> bean : jsAPIs) {
-            UberfireJSExporter jsAPI = bean.getInstance();
+        for (UberfireJSExporter jsAPI : jsExporterProvider) {
             jsAPI.export();
         }
-        if (!jsAPIs.isEmpty()) {
+        if (!jsExporterProvider.isUnsatisfied()) {
             jsapiReadyEvent.fire(new UberfireJSAPIReadyEvent());
         }
     }

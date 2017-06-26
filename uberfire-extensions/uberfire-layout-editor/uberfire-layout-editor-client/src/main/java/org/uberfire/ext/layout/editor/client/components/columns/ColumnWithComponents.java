@@ -17,18 +17,17 @@
 package org.uberfire.ext.layout.editor.client.components.columns;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.Disposer;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.client.components.rows.Row;
 import org.uberfire.ext.layout.editor.client.components.rows.RowDrop;
-import org.uberfire.ext.layout.editor.client.infra.BeanHelper;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.ColumnResizeEvent;
 import org.uberfire.ext.layout.editor.client.infra.DnDManager;
@@ -47,7 +46,7 @@ public class ColumnWithComponents implements Column {
     private ParameterizedCommand<Column> removeColumnCommand;
     private Row row;
     private UniqueIDGenerator idGenerator = new UniqueIDGenerator();
-    private Instance<Row> rowInstance;
+    private ManagedInstance<Row> rowInstance;
     private DnDManager dndManager;
     private LayoutDragComponentHelper layoutDragComponentHelper;
     private boolean canResizeLeft;
@@ -56,28 +55,26 @@ public class ColumnWithComponents implements Column {
     private LayoutTemplate.Style pageStyle;
     private Integer columnHeight = DEFAULT_COLUMN_HEIGHT;
     private Integer columnWidth;
+    private Disposer<Object> disposer;
 
     @Inject
     public ColumnWithComponents(final View view,
-                                Instance<Row> rowInstance,
+                                ManagedInstance<Row> rowInstance,
                                 DnDManager dndManager,
                                 LayoutDragComponentHelper layoutDragComponentHelper,
-                                Event<ColumnResizeEvent> columnResizeEvent) {
+                                Event<ColumnResizeEvent> columnResizeEvent,
+                                Disposer<Object> disposer) {
         this.view = view;
         this.rowInstance = rowInstance;
         this.dndManager = dndManager;
         this.layoutDragComponentHelper = layoutDragComponentHelper;
         this.columnResizeEvent = columnResizeEvent;
+        this.disposer = disposer;
     }
 
     @PostConstruct
     public void post() {
         view.init(this);
-    }
-
-    @PreDestroy
-    public void preDestroy() {
-        destroy(row);
     }
 
     public void init(String parentId,
@@ -179,6 +176,7 @@ public class ColumnWithComponents implements Column {
         };
     }
 
+    @Override
     public void setColumnHeight(Integer columnHeight) {
         this.columnHeight = columnHeight;
     }
@@ -193,10 +191,12 @@ public class ColumnWithComponents implements Column {
         return view;
     }
 
+    @Override
     public Integer getColumnWidth() {
         return columnWidth;
     }
 
+    @Override
     public void setColumnWidth(Integer columnWidth) {
         this.columnWidth = columnWidth;
         view.setWidth(columnWidth);
@@ -239,7 +239,7 @@ public class ColumnWithComponents implements Column {
     }
 
     protected void destroy(Object o) {
-        BeanHelper.destroy(o);
+        disposer.dispose(o);
     }
 
     public void calculateSizeChilds() {
@@ -258,6 +258,7 @@ public class ColumnWithComponents implements Column {
         return id;
     }
 
+    @Override
     public Integer getColumnHeight() {
         return columnHeight;
     }

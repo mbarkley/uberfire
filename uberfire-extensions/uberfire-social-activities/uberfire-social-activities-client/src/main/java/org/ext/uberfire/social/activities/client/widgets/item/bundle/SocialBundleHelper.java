@@ -16,20 +16,23 @@
 
 package org.ext.uberfire.social.activities.client.widgets.item.bundle;
 
-import java.util.Collection;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
 
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+
+@Dependent
 public class SocialBundleHelper {
 
-    public static String getItemDescription(final String key) {
-        Collection<SyncBeanDef<SocialBundleService>> socialBundleServices = IOC.getBeanManager().lookupBeans(SocialBundleService.class);
+    @Inject
+    private ManagedInstance<SocialBundleService> bundleServiceProvider;
+
+    public String getItemDescription(final String key) {
         String value = null;
 
-        for (SyncBeanDef<SocialBundleService> serviceBean : socialBundleServices) {
-            SocialBundleService service = serviceBean.getInstance();
+        for (SocialBundleService service : bundleServiceProvider) {
             try {
                 value = getTranslationFromService(key,
                                                   value,
@@ -38,7 +41,7 @@ public class SocialBundleHelper {
                 GWT.log(e.getMessage());
                 break;
             }
-            IOC.getBeanManager().destroyBean(serviceBean);
+            bundleServiceProvider.destroy(service);
         }
 
         return value != null ? value : key;

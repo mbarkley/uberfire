@@ -41,6 +41,7 @@ import org.jboss.errai.bus.client.api.ClientMessageBus;
 import org.jboss.errai.bus.client.framework.ClientMessageBusImpl;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.BeanDefProvider;
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
@@ -126,6 +127,8 @@ public class Workbench {
     private boolean isStandaloneMode = false;
     @Inject @Any
     private BeanDefProvider<PerspectiveActivity> perspectives;
+    @Inject
+    private Disposer<PerspectiveActivity> disposer;
     @Inject
     private PlaceManager placeManager;
     private final Command workbenchCloseCommand = new Command() {
@@ -301,12 +304,12 @@ public class Workbench {
             if (homePerspectiveId != null && homePerspectiveId.equals(instance.getIdentifier())) {
                 homePerspective = instance;
                 if (defaultPerspective != null) {
-                    perspectives.dispose(defaultPerspective);
+                    disposer.dispose(defaultPerspective);
                 }
             } else if (instance.isDefault()) {
                 defaultPerspective = instance;
             } else {
-                perspectives.dispose(instance);
+                disposer.dispose(instance);
             }
         }
         // The home perspective has always priority over the default

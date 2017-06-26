@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -23,6 +23,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import org.ext.uberfire.social.activities.client.resources.i18n.Constants;
 import org.ext.uberfire.social.activities.client.widgets.item.SimpleItemWidget;
 import org.ext.uberfire.social.activities.client.widgets.item.bundle.SocialBundleHelper;
@@ -37,6 +38,7 @@ import org.gwtbootstrap3.client.ui.MediaList;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 
@@ -48,9 +50,15 @@ public class SimpleSocialTimelineWidget extends Composite {
 
     @UiField
     FlowPanel pagination;
-    private SimpleSocialTimelineWidgetModel model;
 
-    public SimpleSocialTimelineWidget(SimpleSocialTimelineWidgetModel model) {
+    private ManagedInstance<SimpleItemWidget> simpleItemWidgetProvider;
+
+    private SimpleSocialTimelineWidgetModel model;
+    private SocialBundleHelper socialBundleHelper;
+
+    public SimpleSocialTimelineWidget(SimpleSocialTimelineWidgetModel model, ManagedInstance<SimpleItemWidget> simpleItemWidgetProvider, SocialBundleHelper socialBundleHelper) {
+        this.simpleItemWidgetProvider = simpleItemWidgetProvider;
+        this.socialBundleHelper = socialBundleHelper;
         initWidget(uiBinder.createAndBindUi(this));
         this.model = model;
         setupPaginationLinks();
@@ -73,7 +81,8 @@ public class SimpleSocialTimelineWidget extends Composite {
 
     private void createUserTimelineItemsWidget() {
         MessageBuilder.createCall(new RemoteCallback<PagedSocialQuery>() {
-                                      public void callback(PagedSocialQuery paged) {
+                                      @Override
+                                    public void callback(PagedSocialQuery paged) {
                                           createTimeline(paged);
                                       }
                                   },
@@ -84,7 +93,8 @@ public class SimpleSocialTimelineWidget extends Composite {
 
     private void createSociaTypelItemsWidget() {
         MessageBuilder.createCall(new RemoteCallback<PagedSocialQuery>() {
-                                      public void callback(PagedSocialQuery paged) {
+                                      @Override
+                                    public void callback(PagedSocialQuery paged) {
                                           createTimeline(paged);
                                       }
                                   },
@@ -129,14 +139,15 @@ public class SimpleSocialTimelineWidget extends Composite {
                                                                           event.getLinkLabel(),
                                                                           event.getLinkTarget(),
                                                                           event.getLinkType(),
-                                                                          SocialBundleHelper.getItemDescription(event.getAdicionalInfos()),
+                                                                          socialBundleHelper.getItemDescription(event.getAdicionalInfos()),
                                                                           event.getSocialUser())
                 .withLinkCommand(model.getLinkCommand())
                 .withLinkParams(event.getLinkParams());
 
         if (event.isVFSLink()) {
             MessageBuilder.createCall(new RemoteCallback<Path>() {
-                                          public void callback(Path path) {
+                                          @Override
+                                        public void callback(Path path) {
                                               itemModel.withLinkPath(path);
                                               addItemWidget(itemModel);
                                           }
@@ -148,7 +159,7 @@ public class SimpleSocialTimelineWidget extends Composite {
     }
 
     private void addItemWidget(SimpleItemWidgetModel model) {
-        final SimpleItemWidget item = GWT.create(SimpleItemWidget.class);
+        final SimpleItemWidget item = simpleItemWidgetProvider.get();
         item.init(model);
         itemsPanel.add(item);
     }
@@ -157,7 +168,7 @@ public class SimpleSocialTimelineWidget extends Composite {
         final SimpleItemWidgetModel rowModel = new SimpleItemWidgetModel(event.getType(),
                                                                          event.getTimestamp(),
                                                                          event.getDescription(),
-                                                                         SocialBundleHelper.getItemDescription(event.getAdicionalInfos()),
+                                                                         socialBundleHelper.getItemDescription(event.getAdicionalInfos()),
                                                                          event.getSocialUser())
                 .withLinkParams(event.getLinkParams());
         addItemWidget(rowModel);

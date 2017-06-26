@@ -19,8 +19,8 @@ package org.uberfire.client.exporter;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -34,7 +34,11 @@ import org.uberfire.client.plugin.JSNativePlugin;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class PerspectiveJSExporter implements UberfireJSExporter {
     
     @Inject
@@ -73,6 +77,8 @@ public class PerspectiveJSExporter implements UberfireJSExporter {
     }
 
     private native void publish(PerspectiveJSExporter exporter) /*-{
-        $wnd.$registerPerspective = exporter.@org.uberfire.client.exporter.PerspectiveJSExporter::registerPerspective(Ljava/lang/Object;);
+        $wnd.$registerPerspective = function(obj) {
+            exporter.@org.uberfire.client.exporter.PerspectiveJSExporter::registerPerspective(Ljava/lang/Object;)(obj);
+        };
     }-*/;
 }

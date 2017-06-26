@@ -20,8 +20,8 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -37,7 +37,11 @@ import org.uberfire.client.screen.JSWorkbenchScreenActivity;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class PluginJSExporter implements UberfireJSExporter {
 
     @Inject
@@ -112,6 +116,8 @@ public class PluginJSExporter implements UberfireJSExporter {
     }
 
     private native void publish(PluginJSExporter exporter) /*-{
-        $wnd.$registerPlugin = exporter.@org.uberfire.client.exporter.PluginJSExporter::registerPlugin(Ljava/lang/Object;);
+        $wnd.$registerPlugin = function(obj) {
+            exporter.@org.uberfire.client.exporter.PluginJSExporter::registerPlugin(Ljava/lang/Object;)(obj);
+        };
     }-*/;
 }

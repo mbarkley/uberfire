@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
 import org.uberfire.client.mvp.Activity;
@@ -67,15 +66,18 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
     private PerspectiveManager perspectiveManager;
     private ActivityManager activityManager;
     private View view;
+    private PlaceManager placeManager;
 
     WorkbenchMenuBarPresenter(final AuthorizationManager authzManager,
                               final PerspectiveManager perspectiveManager,
                               final ActivityManager activityManager,
+                              final PlaceManager placeManager,
                               final User identity,
                               final View view) {
         this.authzManager = authzManager;
         this.perspectiveManager = perspectiveManager;
         this.activityManager = activityManager;
+        this.placeManager = placeManager;
         this.identity = identity;
         this.view = view;
 
@@ -106,7 +108,7 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
         if (menus != null && !menus.getItems().isEmpty()) {
 
             if (addedMenus == null) {
-                addedMenus = new ArrayList<Menus>();
+                addedMenus = new ArrayList<>();
             }
 
             addedMenus.add(menus);
@@ -210,7 +212,7 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
                                                                             new Command() {
                                                                                 @Override
                                                                                 public void execute() {
-                                                                                    IOC.getBeanManager().lookupBean(PlaceManager.class).getInstance().goTo(menuItemPerspective.getPlaceRequest());
+                                                                                    placeManager.goTo(menuItemPerspective.getPlaceRequest());
                                                                                 }
                                                                             },
                                                                             menuItemPerspective.getPosition());
@@ -307,7 +309,7 @@ public class WorkbenchMenuBarPresenter implements WorkbenchMenuBar {
                                                                                    new Command() {
                                                                                        @Override
                                                                                        public void execute() {
-                                                                                           IOC.getBeanManager().lookupBean(PlaceManager.class).getInstance().goTo(menuItemPerspective.getPlaceRequest());
+                                                                                           placeManager.goTo(menuItemPerspective.getPlaceRequest());
                                                                                        }
                                                                                    },
                                                                                    menuItemPerspective.getPosition());

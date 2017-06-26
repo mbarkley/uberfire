@@ -29,8 +29,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Modal;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.uberfire.client.mvp.ActivityBeansInfo;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.layout.editor.client.api.HasModalConfiguration;
@@ -51,13 +49,15 @@ public class ScreenLayoutDragComponent implements PerspectiveEditorDragComponent
                                                   HasModalConfiguration {
 
     public static final String PLACE_NAME_PARAMETER = "Place Name";
-    protected List<String> availableWorkbenchScreensIds = new ArrayList<String>();
+    protected List<String> availableWorkbenchScreensIds = new ArrayList<>();
     private PlaceManager placeManager;
     private ModalConfigurationContext configContext;
+    private ActivityBeansInfo activityBeansInfo;
 
     @Inject
-    public ScreenLayoutDragComponent(PlaceManager placeManager) {
+    public ScreenLayoutDragComponent(PlaceManager placeManager, ActivityBeansInfo activityBeansInfo) {
         this.placeManager = placeManager;
+        this.activityBeansInfo = activityBeansInfo;
     }
 
     @PostConstruct
@@ -154,9 +154,7 @@ public class ScreenLayoutDragComponent implements PerspectiveEditorDragComponent
     }
 
     ActivityBeansInfo getActivityBeansInfo() {
-        final SyncBeanDef<ActivityBeansInfo> activityBeansInfoIOCBeanDef = IOC.getBeanManager()
-                .lookupBean(ActivityBeansInfo.class);
-        return activityBeansInfoIOCBeanDef.getInstance();
+        return activityBeansInfo;
     }
 
     List<String> getAvailableWorkbenchScreensIds() {

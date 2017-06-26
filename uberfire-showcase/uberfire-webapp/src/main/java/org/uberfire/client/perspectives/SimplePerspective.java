@@ -16,6 +16,7 @@
 package org.uberfire.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
 import org.uberfire.client.ShowcaseEntryPoint;
@@ -37,6 +38,9 @@ import org.uberfire.workbench.model.menu.Menus;
 @WorkbenchPerspective(identifier = "SimplePerspective", isTransient = false)
 public class SimplePerspective {
 
+    @Inject
+    private ShowcaseEntryPoint entryPoint;
+
     @Perspective
     public PerspectiveDefinition buildPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiTabWorkbenchPanelPresenter.class.getName());
@@ -48,7 +52,7 @@ public class SimplePerspective {
     public Menus getMenus() {
         return MenuFactory
                 .newTopLevelMenu("Open")
-                .withItems(ShowcaseEntryPoint.getScreens())
+                .withItems(entryPoint.getScreens())
                 .endMenu()
                 .newTopLevelMenu("Command").respondsWith(new Command() {
                     @Override

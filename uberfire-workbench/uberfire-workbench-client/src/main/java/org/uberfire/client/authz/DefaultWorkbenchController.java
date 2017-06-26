@@ -16,9 +16,9 @@
 
 package org.uberfire.client.authz;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -30,7 +30,10 @@ import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.ActivityResourceType;
 
-@ApplicationScoped
+/*
+ * This must be an entry point so that it is considered reachable by Errai.
+ */
+@EntryPoint
 public class DefaultWorkbenchController implements WorkbenchController {
 
     AuthorizationManager authorizationManager;

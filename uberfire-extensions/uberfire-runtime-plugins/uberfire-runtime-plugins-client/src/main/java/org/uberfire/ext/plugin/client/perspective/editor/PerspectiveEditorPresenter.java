@@ -17,19 +17,18 @@
 package org.uberfire.ext.plugin.client.perspective.editor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -96,6 +95,9 @@ public class PerspectiveEditorPresenter extends BaseEditor {
     private PluginNameValidator pluginNameValidator;
     @Inject
     private PluginController pluginController;
+    @Inject
+    @Any
+    private ManagedInstance<PerspectiveEditorDragComponent> dragComponentProvider;
     private Plugin plugin;
 
     @Inject
@@ -177,10 +179,7 @@ public class PerspectiveEditorPresenter extends BaseEditor {
 
     private List<LayoutDragComponent> scanPerspectiveDragComponents() {
         List<LayoutDragComponent> result = new ArrayList<>();
-        Collection<SyncBeanDef<PerspectiveEditorDragComponent>> beanDefs = IOC
-                .getBeanManager().lookupBeans(PerspectiveEditorDragComponent.class);
-        for (SyncBeanDef<PerspectiveEditorDragComponent> beanDef : beanDefs) {
-            PerspectiveEditorDragComponent dragComponent = beanDef.getInstance();
+        for (PerspectiveEditorDragComponent dragComponent : dragComponentProvider) {
             result.add(dragComponent);
         }
         return result;

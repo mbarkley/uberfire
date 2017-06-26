@@ -19,8 +19,8 @@ package org.uberfire.client.exporter;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -33,7 +33,11 @@ import org.uberfire.client.workbench.type.ClientResourceType;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class ResourceTypeDefinitionJSExporter implements UberfireJSExporter {
     
     @Inject
@@ -65,6 +69,8 @@ public class ResourceTypeDefinitionJSExporter implements UberfireJSExporter {
     }
 
     private native void publish(ResourceTypeDefinitionJSExporter exporter) /*-{
-        $wnd.$registerResourceType = exporter.@org.uberfire.client.exporter.ResourceTypeDefinitionJSExporter::registerResourceTypeDefinition(Ljava/lang/Object;);
+        $wnd.$registerResourceType = function(obj) {
+            exporter.@org.uberfire.client.exporter.ResourceTypeDefinitionJSExporter::registerResourceTypeDefinition(Ljava/lang/Object;)(obj);
+        };
     }-*/;
 }

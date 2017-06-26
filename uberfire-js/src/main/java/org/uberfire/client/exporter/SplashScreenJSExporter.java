@@ -20,8 +20,8 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -36,18 +36,22 @@ import org.uberfire.client.workbench.widgets.splash.SplashView;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class SplashScreenJSExporter implements UberfireJSExporter {
-    
+
     @Inject
     private SyncBeanManager beanManager;
-    
+
     @Inject
     private ActivityBeansCache activityBeansCache;
-    
+
     @Inject
     private ManagedInstance<JSNativeSplashScreen> splashScreen;
-    
+
     @Inject
     private ManagedInstance<SplashView> splashView;
 
@@ -89,7 +93,7 @@ public class SplashScreenJSExporter implements UberfireJSExporter {
         final JSSplashScreenActivity activity;
         activity = new JSSplashScreenActivity(newNativePlugin,
                                               splashView);
-        final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
+        final Set<Annotation> qualifiers = new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS));
         final SingletonBeanDef<JSSplashScreenActivity, JSSplashScreenActivity> beanDef =
                 new SingletonBeanDef<JSSplashScreenActivity, JSSplashScreenActivity>(activity,
                                                                                      JSSplashScreenActivity.class,
@@ -113,6 +117,8 @@ public class SplashScreenJSExporter implements UberfireJSExporter {
     }
 
     private native void publish(SplashScreenJSExporter exporter) /*-{
-        $wnd.$registerSplashScreen = exporter.@org.uberfire.client.exporter.SplashScreenJSExporter::registerSplashScreen(Ljava/lang/Object;);
+        $wnd.$registerSplashScreen = function(obj) {
+            exporter.@org.uberfire.client.exporter.SplashScreenJSExporter::registerSplashScreen(Ljava/lang/Object;)(obj);
+        };
     }-*/;
 }

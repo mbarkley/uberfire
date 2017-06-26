@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -24,6 +24,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import org.ext.uberfire.social.activities.client.widgets.item.model.LinkCommandParams;
 import org.ext.uberfire.social.activities.client.widgets.item.model.SocialItemExpandedWidgetModel;
 import org.ext.uberfire.social.activities.client.widgets.timeline.regular.model.UpdateItem;
@@ -35,15 +39,18 @@ import org.gwtbootstrap3.client.ui.MediaList;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.resources.UberfireResources;
 import org.uberfire.client.workbench.type.ClientResourceType;
 
+@Dependent
 public class SocialItemExpandedWidget extends Composite {
 
     private static final com.google.gwt.user.client.ui.Image GENERIC_FILE_IMAGE = new com.google.gwt.user.client.ui.Image(UberfireResources.INSTANCE.images().typeGenericFile());
     private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
+
     @UiField
     FlowPanel left;
 
@@ -52,6 +59,9 @@ public class SocialItemExpandedWidget extends Composite {
 
     @UiField
     MediaList items;
+
+    @Inject
+    private ManagedInstance<CommentRowWidget> commentRowProvider;
 
     public void init(SocialItemExpandedWidgetModel model) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -75,7 +85,8 @@ public class SocialItemExpandedWidget extends Composite {
         UpdateItem updateItem = model.getUpdateItems().get(0);
         if (updateItem.getEvent().isVFSLink()) {
             MessageBuilder.createCall(new RemoteCallback<Path>() {
-                                          public void callback(Path path) {
+                                          @Override
+                                        public void callback(Path path) {
                                               for (ClientResourceType type : model.getModel().getResourceTypes()) {
                                                   if (type.accept(path)) {
                                                       addIconImage((Image) type.getIcon());
@@ -118,8 +129,9 @@ public class SocialItemExpandedWidget extends Composite {
                                 final UpdateItem updateItem) {
 
         MessageBuilder.createCall(new RemoteCallback<SocialUser>() {
-                                      public void callback(final SocialUser socialUser) {
-                                          final CommentRowWidget row = GWT.create(CommentRowWidget.class);
+                                      @Override
+                                    public void callback(final SocialUser socialUser) {
+                                          final CommentRowWidget row = commentRowProvider.get();
                                           updateItem.setSocialUser(socialUser);
                                           updateItem.setUserClickCommand(model.getModel().getUserClickCommand());
                                           updateItem.setFollowUnfollowCommand(model.getModel().getFollowUnfollowCommand());

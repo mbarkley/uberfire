@@ -35,9 +35,10 @@ import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.QualifierUtil;
+import org.jboss.errai.ioc.client.api.BeanDefProvider;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -126,17 +127,22 @@ public class ShowcaseEntryPoint {
     @Any
     private ManagedInstance<PerspectiveActivity> perspectives;
 
-    public static List<MenuItem> getScreens() {
+    @Inject
+    @Any
+    private BeanDefProvider<WorkbenchScreenActivity> screens;
+
+    public List<MenuItem> getScreens() {
         final List<MenuItem> screens = new ArrayList<>();
         final List<String> names = new ArrayList<>();
 
-        for (final IOCBeanDef<WorkbenchScreenActivity> _menuItem : IOC.getBeanManager().lookupBeans(WorkbenchScreenActivity.class)) {
+        for (final IOCBeanDef<WorkbenchScreenActivity> _menuItem : this.screens) {
             final String name;
             if (!_menuItem.getBeanClass().equals(PerspectiveEditorScreenActivity.class)) {
                 if (_menuItem.getBeanClass().equals(JSWorkbenchScreenActivity.class)) {
                     name = _menuItem.getName();
                 } else {
-                    name = IOC.getBeanManager().lookupBean(_menuItem.getBeanClass()).getName();
+                    Class<? extends WorkbenchScreenActivity> beanClass = (Class) _menuItem.getBeanClass();
+                    name = this.screens.select(beanClass, QualifierUtil.DEFAULT_ANNOTATION).get().getName();
                 }
 
                 if (!menuItemsToRemove.contains(name)) {
@@ -147,7 +153,6 @@ public class ShowcaseEntryPoint {
 
         Collections.sort(names);
 
-        final PlaceManager placeManager = IOC.getBeanManager().lookupBean(PlaceManager.class).getInstance();
         for (final String name : names) {
             final MenuItem item = MenuFactory.newSimpleItem(name)
                     .identifier("screen.read." + name)

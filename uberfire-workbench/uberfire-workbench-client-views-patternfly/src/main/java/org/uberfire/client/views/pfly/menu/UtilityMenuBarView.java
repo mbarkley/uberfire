@@ -25,6 +25,7 @@ import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.html.UnorderedList;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.client.menu.AuthFilterMenuVisitor;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.UtilityMenuBarPresenter;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.menu.MenuPosition;
@@ -43,6 +44,9 @@ public class UtilityMenuBarView extends UnorderedList implements UtilityMenuBarP
     @Inject
     private User identity;
 
+    @Inject
+    private PlaceManager placeManager;
+
     @PostConstruct
     public void setup() {
         addStyleName(Styles.NAV);
@@ -54,7 +58,7 @@ public class UtilityMenuBarView extends UnorderedList implements UtilityMenuBarP
     public void addMenus(final Menus menus) {
         menus.accept(new AuthFilterMenuVisitor(authzManager,
                                                identity,
-                                               new DropdownMenuVisitor(this)));
+                                               new DropdownMenuVisitor(this, placeManager)));
     }
 
     @Override

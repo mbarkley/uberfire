@@ -18,6 +18,7 @@
 package org.uberfire.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
 import org.uberfire.client.ShowcaseEntryPoint;
@@ -42,6 +43,9 @@ public class SimplePerspectiveNoContext {
 
     public static final String SIMPLE_PERSPECTIVE_NO_CONTEXT = "SimplePerspectiveNoContext";
 
+    @Inject
+    private ShowcaseEntryPoint entryPoint;
+
     @Perspective
     public PerspectiveDefinition buildPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
@@ -54,7 +58,7 @@ public class SimplePerspectiveNoContext {
     public Menus getMenus() {
         return MenuFactory
                 .newTopLevelMenu("Open")
-                .withItems(ShowcaseEntryPoint.getScreens())
+                .withItems(entryPoint.getScreens())
                 .endMenu()
                 .newTopLevelMenu("Command").respondsWith(new Command() {
                     @Override

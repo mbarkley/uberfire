@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -17,6 +17,9 @@ package org.ext.uberfire.social.activities.client.widgets.timeline.regular;
 
 import java.util.List;
 import java.util.Map;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -39,15 +42,23 @@ import org.gwtbootstrap3.client.ui.MediaList;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 
+@Dependent
 public class SocialTimelineWidget extends Composite {
 
     private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
     @UiField
     MediaList itemsPanel;
     private SocialTimelineWidgetModel model;
+    @Inject
+    private ManagedInstance<SocialItemExpandedWidget> itemExpandedWidgetProvider;
+    @Inject
+    private ManagedInstance<SimpleItemWidget> simpleItemWidgetProvider;
+    @Inject
+    private SocialBundleHelper bundleHelper;
 
     public void init(SocialTimelineWidgetModel model) {
         this.model = model;
@@ -61,7 +72,8 @@ public class SocialTimelineWidget extends Composite {
 
     private void createRegularQuerySocialItemsWidget(final SocialTimelineWidgetModel model) {
         MessageBuilder.createCall(new RemoteCallback<List<SocialActivitiesEvent>>() {
-                                      public void callback(List<SocialActivitiesEvent> events) {
+                                      @Override
+                                    public void callback(List<SocialActivitiesEvent> events) {
 
                                           if (events.isEmpty()) {
                                               displayNoEvents();
@@ -94,14 +106,15 @@ public class SocialTimelineWidget extends Composite {
                                                                           event.getLinkTarget(),
                                                                           event.getLinkType(),
                                                                           event.getDescription(),
-                                                                          SocialBundleHelper.getItemDescription(event.getAdicionalInfos()),
+                                                                          bundleHelper.getItemDescription(event.getAdicionalInfos()),
                                                                           model.getSocialUser())
                 .withLinkCommand(model.getLinkCommand())
                 .withLinkParams(event.getLinkParams());
 
         if (event.isVFSLink()) {
             MessageBuilder.createCall(new RemoteCallback<Path>() {
-                                          public void callback(Path path) {
+                                          @Override
+                                        public void callback(Path path) {
                                               itemModel.withLinkPath(path);
                                               addItemWidget(itemModel);
                                           }
@@ -117,21 +130,22 @@ public class SocialTimelineWidget extends Composite {
                                                                    event.getType(),
                                                                    event.getTimestamp(),
                                                                    event.getDescription(),
-                                                                   SocialBundleHelper.getItemDescription(event.getAdicionalInfos()))
+                                                                   bundleHelper.getItemDescription(event.getAdicionalInfos()))
                 .withLinkParams(event.getLinkParams());
 
         addItemWidget(rowModel);
     }
 
     private void addItemWidget(SimpleItemWidgetModel model) {
-        final SimpleItemWidget simple = GWT.create(SimpleItemWidget.class);
+        final SimpleItemWidget simple = simpleItemWidgetProvider.get();
         simple.init(model);
         itemsPanel.add(simple);
     }
 
     private void createDroolsQuerySocialItemsWidget(final SocialTimelineWidgetModel model) {
         MessageBuilder.createCall(new RemoteCallback<List<SocialActivitiesEvent>>() {
-                                      public void callback(List<SocialActivitiesEvent> events) {
+                                      @Override
+                                    public void callback(List<SocialActivitiesEvent> events) {
                                           RecentUpdatesModel recentUpdatesModel = RecentUpdatesModel.generate(events);
                                           Map<String, List<UpdateItem>> updateItems = recentUpdatesModel.getUpdateItems();
                                           if (updateItems.keySet().isEmpty()) {
@@ -152,7 +166,7 @@ public class SocialTimelineWidget extends Composite {
                                            Map<String, List<UpdateItem>> updateItems,
                                            SocialTimelineWidgetModel model) {
         for (final String fileName : updateItems.keySet()) {
-            SocialItemExpandedWidget widget = GWT.create(SocialItemExpandedWidget.class);
+            SocialItemExpandedWidget widget = itemExpandedWidgetProvider.get();
             widget.init(new SocialItemExpandedWidgetModel(fileName,
                                                           recentUpdatesModel.getUpdateItems(fileName),
                                                           model));

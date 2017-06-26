@@ -20,11 +20,15 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
+
+import org.ext.uberfire.social.activities.client.widgets.item.SimpleItemWidget;
+import org.ext.uberfire.social.activities.client.widgets.item.bundle.SocialBundleHelper;
 import org.ext.uberfire.social.activities.client.widgets.timeline.simple.SimpleSocialTimelineWidget;
 import org.ext.uberfire.social.activities.client.widgets.timeline.simple.model.SimpleSocialTimelineWidgetModel;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -42,6 +46,13 @@ public class SimpleTimelineView implements IsElement,
     @Inject
     @DataField
     Button newEvent;
+
+    @Inject
+    private ManagedInstance<SimpleItemWidget> simpleItemWidgetProvider;
+
+    @Inject
+    private SocialBundleHelper socialBundleHelper;
+
     private SimpleTimelinePresenter presenter;
 
     @EventHandler("newEvent")
@@ -53,7 +64,7 @@ public class SimpleTimelineView implements IsElement,
     public void setupWidget(SimpleSocialTimelineWidgetModel model) {
         DOMUtil.removeAllChildren(panelContainer);
         DOMUtil.appendWidgetToElement(panelContainer,
-                                      new SimpleSocialTimelineWidget(model));
+                                      new SimpleSocialTimelineWidget(model, simpleItemWidgetProvider, socialBundleHelper));
     }
 
     @WorkbenchPartTitle

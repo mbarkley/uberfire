@@ -17,6 +17,7 @@
 package org.uberfire.ext.editor.commons.client.file;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.ObservablePath;
@@ -28,6 +29,7 @@ public class RestoreUtil {
 
     private ManagedInstance<ObservablePath> pathProvider;
 
+    @Inject
     public RestoreUtil(ManagedInstance<ObservablePath> pathProvider) {
         this.pathProvider = pathProvider;
     }

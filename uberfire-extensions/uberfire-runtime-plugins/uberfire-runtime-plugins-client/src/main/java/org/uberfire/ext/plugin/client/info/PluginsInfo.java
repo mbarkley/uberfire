@@ -82,7 +82,7 @@ public class PluginsInfo {
     }
 
     public Set<Activity> getAllPlugins(final Collection<Plugin> plugins) {
-        Set<Activity> activities = new HashSet<Activity>();
+        Set<Activity> activities = new HashSet<>();
         Collection<Set<Activity>> groupedActivities = getClassifiedPlugins(plugins).values();
 
         for (Set<Activity> groupOfActivities : groupedActivities) {
@@ -94,7 +94,7 @@ public class PluginsInfo {
 
     public Map<ClientResourceType, Set<Activity>> getClassifiedPlugins(final Collection<Plugin> plugins) {
 
-        final Map<ClientResourceType, Set<Activity>> classified = new LinkedHashMap<ClientResourceType, Set<Activity>>();
+        final Map<ClientResourceType, Set<Activity>> classified = new LinkedHashMap<>();
 
         classified.put(perspectiveLayoutPluginResourceType,
                        new HashSet<Activity>());
@@ -162,12 +162,15 @@ public class PluginsInfo {
     }
 
     <T> Collection<SyncBeanDef<T>> lookupBeans(Class<T> clazz) {
+        /*
+         * This bean manager usage does not affect reachability because it only looks up JS beans added at runtime.
+         */
         return IOC.getBeanManager().lookupBeans(clazz);
     }
 
     public Map<ClientResourceType, String> getPluginsTypeLabels() {
 
-        final Map<ClientResourceType, String> labelsByResourceType = new HashMap<ClientResourceType, String>();
+        final Map<ClientResourceType, String> labelsByResourceType = new HashMap<>();
 
         labelsByResourceType.put(perspectiveLayoutPluginResourceType,
                                  CommonConstants.INSTANCE.PerspectivePlugin());

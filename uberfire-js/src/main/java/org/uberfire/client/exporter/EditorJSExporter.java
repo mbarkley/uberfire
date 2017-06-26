@@ -20,8 +20,8 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -36,7 +36,11 @@ import org.uberfire.client.mvp.WorkbenchEditorActivity;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class EditorJSExporter implements UberfireJSExporter {
 
     @Inject
@@ -117,7 +121,9 @@ public class EditorJSExporter implements UberfireJSExporter {
     }
 
     private native void publish(EditorJSExporter exporter) /*-{
-        $wnd.$registerEditor = exporter.@org.uberfire.client.exporter.EditorJSExporter::registerEditor(Ljava/lang/Object;);
+        $wnd.$registerEditor = function(obj) {
+            exporter.@org.uberfire.client.exporter.EditorJSExporter::registerEditor(Ljava/lang/Object;)(obj);
+        };
     }-*/;
 
     public static class EditorResourceTypeNotFound extends RuntimeException {

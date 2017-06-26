@@ -16,13 +16,17 @@
 
 package org.uberfire.client.exporter;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-@ApplicationScoped
+/**
+ * <p>
+ * Scope must be singleton so this is not proxied. Proxying breaks the JSNI method.
+ */
+@Singleton
 public class PlaceManagerJSExporter implements UberfireJSExporter {
 
     @Inject
@@ -38,6 +42,8 @@ public class PlaceManagerJSExporter implements UberfireJSExporter {
     }
 
     private native void publish(PlaceManagerJSExporter exporter) /*-{
-        $wnd.$goToPlace = exporter.@org.uberfire.client.exporter.PlaceManagerJSExporter::goTo(Ljava/lang/String;);
+        $wnd.$goToPlace = function(obj) {
+            exporter.@org.uberfire.client.exporter.PlaceManagerJSExporter::goTo(Ljava/lang/String;)(obj);
+        };
     }-*/;
 }

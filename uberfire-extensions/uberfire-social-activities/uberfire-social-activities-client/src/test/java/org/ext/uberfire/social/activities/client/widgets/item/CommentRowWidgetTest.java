@@ -53,16 +53,11 @@ public class CommentRowWidgetTest {
                                           }
                                       });
 
-        commentRow = new CommentRowWidget() {
-            @Override
-            SocialUserImageProvider getSocialUserImageProvider() {
-                final SocialUserImageProvider provider = mock(SocialUserImageProvider.class);
-                when(provider.getImageForSocialUser(any(SocialUser.class),
-                                                    any(
-                                                            SocialUserImageRepositoryAPI.ImageSize.class))).thenReturn(mock(Image.class));
-                return provider;
-            }
-        };
+        final SocialUserImageProvider provider = mock(SocialUserImageProvider.class);
+        when(provider.getImageForSocialUser(any(SocialUser.class),
+                                            any(SocialUserImageRepositoryAPI.ImageSize.class))).thenReturn(mock(Image.class));
+        commentRow = new CommentRowWidget();
+        commentRow.imageProvider = provider;
         commentRow.left = new FlowPanel();
         updateItem = new UpdateItem(new SocialActivitiesEvent(new SocialUser("dora"),
                                                               "",

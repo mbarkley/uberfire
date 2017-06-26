@@ -28,6 +28,7 @@ import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.BeanDefProvider;
+import org.jboss.errai.ioc.client.api.Disposer;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
@@ -57,6 +58,8 @@ public class ActivityManagerImpl implements ActivityManager {
     private final Map<Object, Boolean> containsCache = new HashMap<>();
     @Inject @Any
     private BeanDefProvider<Activity> activityProvider;
+    @Inject
+    private Disposer<Activity> disposer;
     @Inject
     private AuthorizationManager authzManager;
     @Inject
@@ -201,7 +204,7 @@ public class ActivityManagerImpl implements ActivityManager {
                                              ex);
             }
             if (isDependentScope) {
-                activityProvider.dispose(activity);
+                disposer.dispose(activity);
             }
         } else {
             throw new IllegalStateException("Activity " + activity + " is not currently in the started state");
@@ -250,7 +253,7 @@ public class ActivityManagerImpl implements ActivityManager {
             } else {
                 // Since user does not have permission, destroy bean to avoid memory leak
                 if (activityBean.getScope().equals(Dependent.class)) {
-                    activityProvider.dispose(instance);
+                    disposer.dispose(instance);
                 }
             }
         }
