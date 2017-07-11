@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.client.annotations.WorkbenchEditor;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;

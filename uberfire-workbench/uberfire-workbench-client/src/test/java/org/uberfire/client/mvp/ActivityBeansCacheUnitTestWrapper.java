@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.container.async.AsyncBeanDef;
 import org.uberfire.commons.data.Pair;
 
 import static org.mockito.Mockito.*;
@@ -35,8 +36,8 @@ public class ActivityBeansCacheUnitTestWrapper extends ActivityBeansCache {
     private String idMock;
     private SyncBeanDef mockDef;
     private SplashScreenActivity splashScreenActivity;
-    private Collection<SyncBeanDef<Activity>> availableActivities = new HashSet<SyncBeanDef<Activity>>();
-    private List<ActivityAndMetaInfo> activitiesAndMetaInfo = new ArrayList<ActivityAndMetaInfo>();
+    private Collection<SyncBeanDef<Activity>> availableActivities = new HashSet<>();
+    private List<ActivityAndMetaInfo> activitiesAndMetaInfo = new ArrayList<>();
     private Pair<Integer, List<String>> metaInfo;
     private boolean mockSplashcreen = true;
 
@@ -51,7 +52,7 @@ public class ActivityBeansCacheUnitTestWrapper extends ActivityBeansCache {
     public void mockSplashScreenBehaviour() {
         mockSplashcreen = true;
 
-        Set<Annotation> annotations = new HashSet<Annotation>(Arrays.asList(ActivityBeansCacheUnitTestWrapper.class.getAnnotations()));
+        Set<Annotation> annotations = new HashSet<>(Arrays.asList(ActivityBeansCacheUnitTestWrapper.class.getAnnotations()));
         when(mockDef.getQualifiers()).thenReturn(annotations);
 
         splashScreenActivity = mock(AbstractSplashScreenActivity.class);
@@ -69,8 +70,9 @@ public class ActivityBeansCacheUnitTestWrapper extends ActivityBeansCache {
     }
 
     @Override
-    Collection<SyncBeanDef<Activity>> getAvailableActivities() {
-        return availableActivities;
+    Collection<AsyncBeanDef<? extends Activity>> getAvailableActivities() {
+//        return availableActivities;
+        throw new RuntimeException("Not yet implemented");
     }
 
     public SyncBeanDef getMockDef() {
@@ -101,7 +103,7 @@ public class ActivityBeansCacheUnitTestWrapper extends ActivityBeansCache {
     }
 
     @Override
-    Pair<Integer, List<String>> generateActivityMetaInfo(SyncBeanDef<Activity> activityBean) {
+    Pair<Integer, List<String>> generateActivityMetaInfo(SyncBeanDef<? extends Activity> activityBean) {
         return metaInfo;
     }
 

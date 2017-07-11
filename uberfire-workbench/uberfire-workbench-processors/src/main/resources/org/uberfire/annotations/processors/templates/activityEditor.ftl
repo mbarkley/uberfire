@@ -72,6 +72,10 @@ import jsinterop.annotations.JsType;
 import org.jboss.errai.ioc.client.api.Shared;
 
 </#if>
+<#if isAsync>
+import org.jboss.errai.ioc.client.api.LoadAsync;
+</#if>
+
 @Dependent
 @Generated("org.uberfire.annotations.processors.WorkbenchEditorProcessor")
 @Named("${identifier}")
@@ -88,6 +92,9 @@ ${associatedResources}
 <#list qualifiers as qualifier>
 ${qualifier}
 </#list>
+<#if isAsync>
+@LoadAsync
+</#if>
 /*
  * WARNING! This class is generated. Do not modify.
  */

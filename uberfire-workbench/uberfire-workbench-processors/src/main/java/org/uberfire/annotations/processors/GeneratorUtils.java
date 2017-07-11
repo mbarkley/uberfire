@@ -15,12 +15,18 @@
  */
 package org.uberfire.annotations.processors;
 
+import static java.util.Collections.singletonList;
+import static org.uberfire.annotations.processors.facades.ClientAPIModule.OWNING_PERSPECTIVE;
+import static org.uberfire.annotations.processors.facades.ClientAPIModule.workbenchEditor;
+import static org.uberfire.annotations.processors.facades.ClientAPIModule.workbenchScreen;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.inject.Qualifier;
 import javax.lang.model.element.AnnotationMirror;
@@ -43,11 +49,6 @@ import org.uberfire.annotations.processors.exceptions.GenerationException;
 import org.uberfire.annotations.processors.facades.APIModule;
 import org.uberfire.annotations.processors.facades.BackendModule;
 import org.uberfire.annotations.processors.facades.ClientAPIModule;
-
-import static java.util.Collections.singletonList;
-import static org.uberfire.annotations.processors.facades.ClientAPIModule.OWNING_PERSPECTIVE;
-import static org.uberfire.annotations.processors.facades.ClientAPIModule.workbenchEditor;
-import static org.uberfire.annotations.processors.facades.ClientAPIModule.workbenchScreen;
 
 /**
  * Utilities for code generation
@@ -702,7 +703,7 @@ public class GeneratorUtils {
         if (e.getParameters().size() != requiredParameterTypes.length) {
             return false;
         }
-        List<TypeMirror> requiredTypes = new ArrayList<TypeMirror>();
+        List<TypeMirror> requiredTypes = new ArrayList<>();
         for (String parameterType : requiredParameterTypes) {
             requiredTypes.add(elementUtils.getTypeElement(parameterType).asType());
         }
@@ -932,7 +933,7 @@ public class GeneratorUtils {
         while (true) {
             final List<ExecutableElement> methods = ElementFilter.methodsIn(classElement.getEnclosedElements());
 
-            List<ExecutableElement> matches = new ArrayList<ExecutableElement>();
+            List<ExecutableElement> matches = new ArrayList<>();
             for (ExecutableElement e : methods) {
 
                 final TypeMirror actualReturnType = e.getReturnType();
@@ -943,7 +944,7 @@ public class GeneratorUtils {
                     continue;
                 }
 
-                List<String> problems = new ArrayList<String>();
+                List<String> problems = new ArrayList<>();
 
                 boolean foundRequiredType = false;
                 for (TypeMirror requiredReturnType : requiredReturnTypes) {
@@ -1294,7 +1295,7 @@ public class GeneratorUtils {
     public static Collection<String> extractValue(final AnnotationValue value) {
         if (value.getValue() instanceof Collection) {
             final Collection<?> varray = (List<?>) value.getValue();
-            final ArrayList<String> result = new ArrayList<String>(varray.size());
+            final ArrayList<String> result = new ArrayList<>(varray.size());
             for (final Object active : varray) {
                 result.addAll(extractValue((AnnotationValue) active));
             }
@@ -1323,7 +1324,7 @@ public class GeneratorUtils {
         if (nestedAnnotations == null) {
             return Collections.emptyList();
         }
-        final List<AnnotationMirror> result = new ArrayList<AnnotationMirror>();
+        final List<AnnotationMirror> result = new ArrayList<>();
         nestedAnnotations.accept(new SimpleAnnotationValueVisitor6<Void, Void>() {
                                      @Override
                                      public Void visitArray(List<? extends AnnotationValue> vals,
@@ -1344,23 +1345,6 @@ public class GeneratorUtils {
                                  },
                                  null);
         return result;
-    }
-
-    private static String collectionAsString(final Collection<String> collection) {
-        final StringBuilder sb = new StringBuilder();
-
-        Iterator<String> iterator = collection.iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            final String next = iterator.next();
-            sb.append('"').append(next).append('"');
-            if (i + 1 < collection.size()) {
-                sb.append(", ");
-            }
-            i++;
-        }
-
-        return sb.toString();
     }
 
     public static String formatAssociatedResources(final Collection<String> resourceTypes) {
@@ -1436,5 +1420,15 @@ public class GeneratorUtils {
         }
 
         return qualifiers;
+    }
+
+    public static boolean getIsAsync(TypeElement classElement) {
+        return classElement
+                .getAnnotationMirrors()
+                .stream()
+                .anyMatch(mirror ->
+                    ((TypeElement) mirror.getAnnotationType().asElement())
+                          .getQualifiedName()
+                          .contentEquals("org.jboss.errai.ioc.client.api.LoadAsync"));
     }
 }

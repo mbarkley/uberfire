@@ -16,6 +16,8 @@
 
 package org.uberfire.client.mvp;
 
+import static java.util.Collections.sort;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,75 +29,94 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
+import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ioc.client.container.async.AsyncBeanDef;
+import org.jboss.errai.ioc.client.container.async.AsyncBeanManager;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.client.workbench.Workbench;
 import org.uberfire.client.workbench.annotations.AssociatedResources;
 import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
 import org.uberfire.client.workbench.type.ClientResourceType;
 import org.uberfire.commons.data.Pair;
 
-import static java.util.Collections.sort;
-
 /**
  *
  */
-@ApplicationScoped
+@EntryPoint
 @EnabledByProperty(value = "uberfire.plugin.mode.active", negated = true)
 public class ActivityBeansCache {
 
     /**
      * All active activity beans mapped by their CDI bean name (names are mandatory for activity beans).
      */
-    private final Map<String, SyncBeanDef<Activity>> activitiesById = new HashMap<String, SyncBeanDef<Activity>>();
+    private final Map<String, SyncBeanDef<? extends Activity>> activitiesById = new HashMap<>();
     /**
      * All active Activities that have an {@link AssociatedResources} annotation and are not splash screens.
      */
-    private final List<ActivityAndMetaInfo> resourceActivities = new ArrayList<ActivityAndMetaInfo>();
+    private final List<ActivityAndMetaInfo> resourceActivities = new ArrayList<>();
+
+    private final List<Runnable> postInitTasks = new ArrayList<>();
+    private boolean initialized = false;
+
     /**
      * All active activities that are splash screens.
      */
-    private final List<SplashScreenActivity> splashActivities = new ArrayList<SplashScreenActivity>();
+    private final List<SplashScreenActivity> splashActivities = new ArrayList<>();
     @Inject
-    private SyncBeanManager iocManager;
+    private SyncBeanManager syncManager;
+    @Inject
+    private AsyncBeanManager asyncManager;
     @Inject
     private Event<NewPerspectiveEvent> newPerspectiveEventEvent;
     @Inject
     private Event<NewWorkbenchScreenEvent> newWorkbenchScreenEventEvent;
+    @Inject
+    private Workbench workbench;
 
     @PostConstruct
     void init() {
-        final Collection<SyncBeanDef<Activity>> availableActivities = getAvailableActivities();
+        workbench.addStartupBlocker(ActivityBeansCache.class);
+        Collection<AsyncBeanDef<? extends Activity>> availableActivityBeans = getAvailableActivities();
+        asyncManager.loadBeans(availableActivityBeans, availableActivities -> {
+            for (final SyncBeanDef<? extends Activity> activityBean : availableActivities) {
 
-        for (final SyncBeanDef<Activity> activityBean : availableActivities) {
+                final String id = activityBean.getName();
 
-            final String id = activityBean.getName();
+                validateUniqueness(id);
 
-            validateUniqueness(id);
+                activitiesById.put(id,
+                                   activityBean);
 
-            activitiesById.put(id,
-                               activityBean);
-
-            if (isSplashScreen(activityBean.getQualifiers())) {
-                splashActivities.add((SplashScreenActivity) activityBean.getInstance());
-            } else {
-                final Pair<Integer, List<String>> metaInfo = generateActivityMetaInfo(activityBean);
-                if (metaInfo != null) {
-                    getResourceActivities().add(new ActivityAndMetaInfo(activityBean,
-                                                                        metaInfo.getK1(),
-                                                                        metaInfo.getK2()));
+                if (isSplashScreen(activityBean.getQualifiers())) {
+                    splashActivities.add((SplashScreenActivity) activityBean.getInstance());
+                } else {
+                    final Pair<Integer, List<String>> metaInfo = generateActivityMetaInfo(activityBean);
+                    if (metaInfo != null) {
+                        getResourceActivities().add(new ActivityAndMetaInfo(activityBean,
+                                                                            metaInfo.getK1(),
+                                                                            metaInfo.getK2()));
+                    }
                 }
             }
-        }
 
-        sortResourceActivitiesByPriority();
+            sortResourceActivitiesByPriority();
+            runPostInitializationTasks();
+            workbench.removeStartupBlocker(ActivityBeansCache.class);
+        });
+    }
+
+    private void runPostInitializationTasks() {
+        postInitTasks.forEach(task -> task.run());
+        postInitTasks.clear();
+        initialized = true;
     }
 
     /**
@@ -123,9 +144,9 @@ public class ActivityBeansCache {
              });
     }
 
-    Collection<SyncBeanDef<Activity>> getAvailableActivities() {
-        Collection<SyncBeanDef<Activity>> activeBeans = new ArrayList<SyncBeanDef<Activity>>();
-        for (SyncBeanDef<Activity> bean : iocManager.lookupBeans(Activity.class)) {
+    Collection<AsyncBeanDef<? extends Activity>> getAvailableActivities() {
+        Collection<AsyncBeanDef<? extends Activity>> activeBeans = new ArrayList<>();
+        for (AsyncBeanDef<Activity> bean : asyncManager.lookupBeans(Activity.class)) {
             if (bean.isActivated()) {
                 activeBeans.add(bean);
             }
@@ -150,6 +171,15 @@ public class ActivityBeansCache {
      * Used for runtime plugins.
      */
     public void addNewScreenActivity(final SyncBeanDef<Activity> activityBean) {
+        if (initialized) {
+            doAddNewScreenActivity(activityBean);
+        }
+        else {
+            postInitTasks.add(() -> doAddNewScreenActivity(activityBean));
+        }
+    }
+
+    private void doAddNewScreenActivity( final SyncBeanDef<Activity> activityBean ) {
         final String id = activityBean.getName();
 
         validateUniqueness(id);
@@ -169,6 +199,15 @@ public class ActivityBeansCache {
      * Used for runtime plugins.
      */
     public void addNewPerspectiveActivity(final SyncBeanDef<Activity> activityBean) {
+        if (initialized) {
+            doAddNewPerspectiveActivity(activityBean);
+        }
+        else {
+            postInitTasks.add(() -> doAddNewPerspectiveActivity(activityBean));
+        }
+    }
+
+    private void doAddNewPerspectiveActivity( final SyncBeanDef<Activity> activityBean ) {
         final String id = activityBean.getName();
 
         validateUniqueness(id);
@@ -184,6 +223,17 @@ public class ActivityBeansCache {
     public void addNewEditorActivity(final SyncBeanDef<Activity> activityBean,
                                      String priority,
                                      String resourceTypeName) {
+        if (initialized) {
+            doAddNewEditorActivity( activityBean, priority, resourceTypeName );
+        }
+        else {
+            postInitTasks.add(() -> doAddNewEditorActivity(activityBean, priority, resourceTypeName));
+        }
+    }
+
+    private void doAddNewEditorActivity( final SyncBeanDef<Activity> activityBean,
+                            String priority,
+                            String resourceTypeName ) {
         final String id = activityBean.getName();
 
         validateUniqueness(id);
@@ -198,6 +248,15 @@ public class ActivityBeansCache {
     }
 
     public void addNewSplashScreenActivity(final SyncBeanDef<Activity> activityBean) {
+        if (initialized) {
+            doAddNewSplashScreenActivity( activityBean );
+        }
+        else {
+            postInitTasks.add(() -> doAddNewSplashScreenActivity(activityBean));
+        }
+    }
+
+    private void doAddNewSplashScreenActivity( final SyncBeanDef<Activity> activityBean ) {
         final String id = activityBean.getName();
 
         validateUniqueness(id);
@@ -224,8 +283,9 @@ public class ActivityBeansCache {
      * @param id the CDI name of the bean (see {@link Named}), or in the case of runtime plugins, the name the activity
      * was registered under.
      */
+    @SuppressWarnings("unchecked")
     public SyncBeanDef<Activity> getActivity(final String id) {
-        return activitiesById.get(id);
+        return (SyncBeanDef<Activity>) activitiesById.get(id);
     }
 
     /**
@@ -234,12 +294,13 @@ public class ActivityBeansCache {
      * @param path the file to find a path-based activity for (probably a {@link WorkbenchEditorActivity}, but this cache
      * makes no guarantees).
      */
+    @SuppressWarnings("unchecked")
     public SyncBeanDef<Activity> getActivity(final Path path) {
 
         for (final ActivityAndMetaInfo currentActivity : getResourceActivities()) {
             for (final ClientResourceType resourceType : currentActivity.getResourceTypes()) {
                 if (resourceType.accept(path)) {
-                    return currentActivity.getActivityBean();
+                    return (SyncBeanDef<Activity>) currentActivity.getActivityBean();
                 }
             }
         }
@@ -247,33 +308,33 @@ public class ActivityBeansCache {
         throw new EditorResourceTypeNotFound();
     }
 
+    @SuppressWarnings("unchecked")
     public List<SyncBeanDef<Activity>> getPerspectiveActivities() {
         List<SyncBeanDef<Activity>> results = new ArrayList<>();
-        for (SyncBeanDef<Activity> beanDef : activitiesById.values()) {
+        for (SyncBeanDef<? extends Activity> beanDef : activitiesById.values()) {
             if (beanDef.isAssignableTo(PerspectiveActivity.class)) {
-                results.add(beanDef);
+                results.add((SyncBeanDef<Activity>) beanDef);
             }
         }
         return results;
     }
 
-    Pair<Integer, List<String>> generateActivityMetaInfo(SyncBeanDef<Activity> activityBean) {
+    Pair<Integer, List<String>> generateActivityMetaInfo(SyncBeanDef<? extends Activity> activityBean) {
         return ActivityMetaInfo.generate(activityBean);
     }
 
     public List<String> getActivitiesById() {
-        return new ArrayList<String>(activitiesById.keySet());
+        return new ArrayList<>(activitiesById.keySet());
     }
 
     class ActivityAndMetaInfo {
 
-        private final SyncBeanDef<Activity> activityBean;
+        private final SyncBeanDef<? extends Activity> activityBean;
         private final int priority;
         final List<String> resourceTypesNames;
         ClientResourceType[] resourceTypes;
 
-        @SuppressWarnings("rawtypes")
-        ActivityAndMetaInfo(final SyncBeanDef<Activity> activityBean,
+        ActivityAndMetaInfo(final SyncBeanDef<? extends Activity> activityBean,
                             final int priority,
                             final List<String> resourceTypesNames) {
             this.activityBean = activityBean;
@@ -281,7 +342,7 @@ public class ActivityBeansCache {
             this.resourceTypesNames = resourceTypesNames;
         }
 
-        public SyncBeanDef<Activity> getActivityBean() {
+        public SyncBeanDef<? extends Activity> getActivityBean() {
             return activityBean;
         }
 
@@ -300,7 +361,7 @@ public class ActivityBeansCache {
             this.resourceTypes = new ClientResourceType[resourceTypesNames.size()];
             for (int i = 0; i < resourceTypesNames.size(); i++) {
                 final String resourceTypeIdentifier = resourceTypesNames.get(i);
-                final Collection<SyncBeanDef> resourceTypeBeans = iocManager.lookupBeans(resourceTypeIdentifier);
+                final Collection<SyncBeanDef> resourceTypeBeans = syncManager.lookupBeans(resourceTypeIdentifier);
                 if (resourceTypeBeans.isEmpty()) {
                     throw new RuntimeException("ClientResourceType " + resourceTypeIdentifier + " not found");
                 }

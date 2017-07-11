@@ -167,6 +167,7 @@ public class EditorActivityGenerator extends AbstractGenerator {
         final String getToolBarMethodName = GeneratorUtils.getToolBarMethodName(classElement,
                                                                                 processingEnvironment);
         final List<String> qualifiers = GeneratorUtils.getAllQualifiersDeclarationFromType(classElement);
+        final boolean isAsync = GeneratorUtils.getIsAsync(classElement);
 
         if (GeneratorUtils.debugLoggingEnabled()) {
             messager.printMessage(Kind.NOTE,
@@ -249,7 +250,7 @@ public class EditorActivityGenerator extends AbstractGenerator {
         }
 
         //Setup data for template sub-system
-        Map<String, Object> root = new HashMap<String, Object>();
+        Map<String, Object> root = new HashMap<>();
         root.put("packageName",
                  packageName);
         root.put("className",
@@ -315,6 +316,8 @@ public class EditorActivityGenerator extends AbstractGenerator {
                  isDynamic);
         root.put("qualifiers",
                  qualifiers);
+        root.put("isAsync",
+                 isAsync);
 
         //Generate code
         final StringWriter sw = new StringWriter();
