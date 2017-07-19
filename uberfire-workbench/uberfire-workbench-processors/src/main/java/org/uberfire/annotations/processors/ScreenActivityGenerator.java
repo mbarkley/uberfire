@@ -158,6 +158,8 @@ public class ScreenActivityGenerator extends AbstractGenerator {
 
         final List<String> qualifiers = GeneratorUtils.getAllQualifiersDeclarationFromType(classElement);
 
+        final boolean isAsync = GeneratorUtils.getIsAsync(classElement);
+
         if (GeneratorUtils.debugLoggingEnabled()) {
             messager.printMessage(Kind.NOTE,
                                   "Package name: " + packageName);
@@ -237,7 +239,7 @@ public class ScreenActivityGenerator extends AbstractGenerator {
         }
 
         //Setup data for template sub-system
-        Map<String, Object> root = new HashMap<String, Object>();
+        Map<String, Object> root = new HashMap<>();
         root.put("packageName",
                  packageName);
         root.put("className",
@@ -300,6 +302,8 @@ public class ScreenActivityGenerator extends AbstractGenerator {
                  isDynamic);
         root.put("qualifiers",
                  qualifiers);
+        root.put("isAsync",
+                 isAsync);
 
         //Generate code
         final StringWriter sw = new StringWriter();

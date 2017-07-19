@@ -64,6 +64,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.ioc.client.api.ActivatedBy;
 
 </#if>
+<#if isAsync>
+import org.jboss.errai.ioc.client.api.LoadAsync;
+</#if>
 <#if isDynamic>
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
@@ -78,6 +81,9 @@ import org.jboss.errai.ioc.client.api.Shared;
 </#if>
 <#if isDynamic>
 @JsType
+</#if>
+<#if isAsync>
+@LoadAsync
 </#if>
 <#list qualifiers as qualifier>
 ${qualifier}

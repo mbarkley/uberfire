@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.ScriptInjector;
+
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.ext.editor.commons.client.file.exports.FileExportResources;
 
 /**
@@ -32,6 +34,7 @@ import org.uberfire.ext.editor.commons.client.file.exports.FileExportResources;
  * - no conflicts during third party libraries version updates
  */
 @ApplicationScoped
+@LoadAsync
 public class FileExportScriptInjector {
 
     public static final String NS = "org.uberfire.ext.editor.commons.client.file.exports.jso.";

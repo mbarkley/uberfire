@@ -29,6 +29,7 @@ import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -40,6 +41,7 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 
 @Dependent
 @Templated
+@LoadAsync
 public class HtmlEditorView implements HtmlEditorPresenter.View,
                                        IsElement {
 

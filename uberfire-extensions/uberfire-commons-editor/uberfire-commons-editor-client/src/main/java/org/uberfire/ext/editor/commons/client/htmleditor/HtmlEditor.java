@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -49,6 +50,7 @@ import static org.uberfire.ext.editor.commons.client.menu.MenuItems.SAVE;
 
 @Dependent
 @WorkbenchEditor(identifier = "HtmlEditor", supportedTypes = HtmlResourceType.class)
+@LoadAsync
 public class HtmlEditor extends BaseEditor {
 
     private HtmlResourceType htmlResourceType;

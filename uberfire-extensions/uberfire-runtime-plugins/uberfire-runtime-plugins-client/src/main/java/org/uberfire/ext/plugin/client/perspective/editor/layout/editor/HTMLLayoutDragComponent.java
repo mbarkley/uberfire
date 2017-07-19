@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Modal;
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.ext.layout.editor.client.api.HasModalConfiguration;
 import org.uberfire.ext.layout.editor.client.api.ModalConfigurationContext;
 import org.uberfire.ext.layout.editor.client.api.RenderingContext;
@@ -31,6 +32,7 @@ import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.popups.Ed
 import org.uberfire.ext.plugin.client.resources.i18n.CommonConstants;
 
 @Dependent
+@LoadAsync
 public class HTMLLayoutDragComponent implements PerspectiveEditorDragComponent,
                                                 HasModalConfiguration {
 

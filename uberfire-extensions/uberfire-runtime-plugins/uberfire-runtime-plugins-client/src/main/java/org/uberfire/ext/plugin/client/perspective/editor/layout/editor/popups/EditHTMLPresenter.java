@@ -19,12 +19,14 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Modal;
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.editor.commons.client.htmleditor.HtmlEditorPresenter;
 import org.uberfire.ext.layout.editor.client.api.ModalConfigurationContext;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
 
 @Dependent
+@LoadAsync
 public class EditHTMLPresenter {
 
     private View view;

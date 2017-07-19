@@ -19,10 +19,12 @@ package org.uberfire.ext.editor.commons.client.htmleditor;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.editor.commons.client.BaseEditorView;
 
 @Dependent
+@LoadAsync
 public class HtmlEditorPresenter {
 
     private final View view;
