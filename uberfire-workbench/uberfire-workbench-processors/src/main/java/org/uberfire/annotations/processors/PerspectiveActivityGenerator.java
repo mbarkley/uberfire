@@ -42,7 +42,7 @@ import static org.uberfire.annotations.processors.TemplateInformationHelper.extr
  */
 public class PerspectiveActivityGenerator extends AbstractGenerator {
 
-    private final Map<String, String> context = new HashMap<String, String>();
+    private final Map<String, String> context = new HashMap<>();
 
     @Override
     public StringBuffer generate(final String packageName,
@@ -63,6 +63,7 @@ public class PerspectiveActivityGenerator extends AbstractGenerator {
         boolean isDefault = ClientAPIModule.getWbPerspectiveScreenIsDefaultValueOnClass(classElement);
         boolean isTransient = ClientAPIModule.getWbPerspectiveScreenIsTransientValueOnClass(classElement);
         boolean isDynamic = ClientAPIModule.getWbPerspectiveScreenIsDynamicValueOnClass(classElement);
+        boolean isAsync = GeneratorUtils.getIsAsync(classElement);
 
         final String beanActivatorClass = GeneratorUtils.getBeanActivatorClassName(classElement,
                                                                                    processingEnvironment);
@@ -129,7 +130,7 @@ public class PerspectiveActivityGenerator extends AbstractGenerator {
                                                                qualifiers));
         }
 
-        Map<String, Object> root = new HashMap<String, Object>();
+        Map<String, Object> root = new HashMap<>();
 
         TemplateInformation helper = extractWbTemplatePerspectiveInformation(elementUtils,
                                                                              classElement);
@@ -192,6 +193,8 @@ public class PerspectiveActivityGenerator extends AbstractGenerator {
                  isDynamic);
         root.put("qualifiers",
                  qualifiers);
+        root.put("isAsync",
+                 isAsync);
 
         //Generate code
         final StringWriter sw = new StringWriter();
