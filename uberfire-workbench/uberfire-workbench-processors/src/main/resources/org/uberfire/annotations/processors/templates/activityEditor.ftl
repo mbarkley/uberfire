@@ -75,6 +75,9 @@ import org.jboss.errai.ioc.client.api.Shared;
 <#if isAsync>
 import org.jboss.errai.ioc.client.api.LoadAsync;
 </#if>
+<#if asyncFragmentName??>
+import ${asyncFragmentName};
+</#if>
 
 @Dependent
 @Generated("org.uberfire.annotations.processors.WorkbenchEditorProcessor")
@@ -93,7 +96,11 @@ ${associatedResources}
 ${qualifier}
 </#list>
 <#if isAsync>
+<#if asyncFragmentSimpleName??>
+@LoadAsync(${asyncFragmentSimpleName}.class)
+<#else>
 @LoadAsync
+</#if>
 </#if>
 /*
  * WARNING! This class is generated. Do not modify.

@@ -71,6 +71,9 @@ import org.jboss.errai.ioc.client.api.Shared;
 <#if isAsync>
 import org.jboss.errai.ioc.client.api.LoadAsync;
 </#if>
+<#if asyncFragmentName??>
+import ${asyncFragmentName};
+</#if>
 
 @Dependent
 @Generated("org.uberfire.annotations.processors.WorkbenchPerspectiveProcessor")
@@ -82,7 +85,11 @@ import org.jboss.errai.ioc.client.api.LoadAsync;
 @JsType
 </#if>
 <#if isAsync>
+<#if asyncFragmentSimpleName??>
+@LoadAsync(${asyncFragmentSimpleName}.class)
+<#else>
 @LoadAsync
+</#if>
 </#if>
 <#list qualifiers as qualifier>
 ${qualifier}

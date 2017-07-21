@@ -21,6 +21,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -29,13 +31,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic.Kind;
+
+import org.uberfire.annotations.processors.exceptions.GenerationException;
+import org.uberfire.annotations.processors.facades.ClientAPIModule;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.uberfire.annotations.processors.exceptions.GenerationException;
-import org.uberfire.annotations.processors.facades.ClientAPIModule;
 
 /**
  * A source code generator for Activities
@@ -52,8 +54,6 @@ public class ScreenActivityGenerator extends AbstractGenerator {
         final Messager messager = processingEnvironment.getMessager();
         messager.printMessage(Kind.NOTE,
                               "Starting code generation for [" + className + "]");
-
-        final Elements elementUtils = processingEnvironment.getElementUtils();
 
         //Extract required information
         final TypeElement classElement = (TypeElement) element;
@@ -159,6 +159,7 @@ public class ScreenActivityGenerator extends AbstractGenerator {
         final List<String> qualifiers = GeneratorUtils.getAllQualifiersDeclarationFromType(classElement);
 
         final boolean isAsync = GeneratorUtils.getIsAsync(classElement);
+        final Optional<TypeElement> asyncFragment = GeneratorUtils.getAsyncFragmentId(processingEnvironment.getTypeUtils(), classElement);
 
         if (GeneratorUtils.debugLoggingEnabled()) {
             messager.printMessage(Kind.NOTE,
@@ -304,6 +305,13 @@ public class ScreenActivityGenerator extends AbstractGenerator {
                  qualifiers);
         root.put("isAsync",
                  isAsync);
+        asyncFragment
+            .ifPresent(type -> {
+              root.put("asyncFragmentName",
+                       type.getQualifiedName().toString());
+              root.put("asyncFragmentSimpleName",
+                       type.getSimpleName().toString());
+            });
 
         //Generate code
         final StringWriter sw = new StringWriter();

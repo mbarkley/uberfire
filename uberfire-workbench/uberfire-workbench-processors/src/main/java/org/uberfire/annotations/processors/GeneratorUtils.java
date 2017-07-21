@@ -23,9 +23,9 @@ import static org.uberfire.annotations.processors.facades.ClientAPIModule.workbe
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.inject.Qualifier;
@@ -1430,5 +1430,27 @@ public class GeneratorUtils {
                     ((TypeElement) mirror.getAnnotationType().asElement())
                           .getQualifiedName()
                           .contentEquals("org.jboss.errai.ioc.client.api.LoadAsync"));
+    }
+
+    public static Optional<TypeElement> getAsyncFragmentId(Types typeUtils, TypeElement classElement) {
+        return classElement
+                .getAnnotationMirrors()
+                .stream()
+                .filter(mirror ->
+                    ((TypeElement) mirror.getAnnotationType().asElement())
+                          .getQualifiedName()
+                          .contentEquals("org.jboss.errai.ioc.client.api.LoadAsync"))
+                .findFirst()
+                .flatMap(mirror -> {
+                    Map<? extends ExecutableElement, ? extends AnnotationValue> values = mirror.getElementValues();
+                    if (values.isEmpty()) {
+                        return Optional.empty();
+                    }
+                    else {
+                        return Optional.of(values.values().iterator().next());
+                    }
+                })
+                .flatMap(value -> Optional.of((TypeMirror) value.getValue()))
+                .flatMap(mirror -> Optional.of((TypeElement) typeUtils.asElement(mirror)));
     }
 }

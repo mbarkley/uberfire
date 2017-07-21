@@ -21,6 +21,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -64,6 +66,7 @@ public class PerspectiveActivityGenerator extends AbstractGenerator {
         boolean isTransient = ClientAPIModule.getWbPerspectiveScreenIsTransientValueOnClass(classElement);
         boolean isDynamic = ClientAPIModule.getWbPerspectiveScreenIsDynamicValueOnClass(classElement);
         boolean isAsync = GeneratorUtils.getIsAsync(classElement);
+        final Optional<TypeElement> asyncFragment = GeneratorUtils.getAsyncFragmentId(processingEnvironment.getTypeUtils(), classElement);
 
         final String beanActivatorClass = GeneratorUtils.getBeanActivatorClassName(classElement,
                                                                                    processingEnvironment);
@@ -195,6 +198,13 @@ public class PerspectiveActivityGenerator extends AbstractGenerator {
                  qualifiers);
         root.put("isAsync",
                  isAsync);
+        asyncFragment
+            .ifPresent(type -> {
+              root.put("asyncFragmentName",
+                       type.getQualifiedName().toString());
+              root.put("asyncFragmentSimpleName",
+                       type.getSimpleName().toString());
+            });
 
         //Generate code
         final StringWriter sw = new StringWriter();

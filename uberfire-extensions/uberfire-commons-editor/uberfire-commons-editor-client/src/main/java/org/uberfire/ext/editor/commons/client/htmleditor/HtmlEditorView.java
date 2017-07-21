@@ -34,6 +34,7 @@ import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.async.UberfireActivityFragment;
 import org.uberfire.client.workbench.docks.UberfireDocksInteractionEvent;
 import org.uberfire.ext.editor.commons.client.EditorTitle;
 import org.uberfire.ext.editor.commons.client.resources.i18n.Constants;
@@ -41,7 +42,7 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 
 @Dependent
 @Templated
-@LoadAsync
+@LoadAsync(UberfireActivityFragment.class)
 public class HtmlEditorView implements HtmlEditorPresenter.View,
                                        IsElement {
 

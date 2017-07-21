@@ -20,15 +20,15 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
-import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.uberfire.client.annotations.WorkbenchEditor;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.views.pfly.multipage.PageImpl;
 import org.uberfire.client.workbench.widgets.multipage.MultiPageEditor;
+
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.IsWidget;
 
 @Dependent
 @WorkbenchEditor(identifier = "SampleWorkbenchEditor", supportedTypes = TextResourceType.class)

@@ -21,13 +21,14 @@ import javax.enterprise.context.ApplicationScoped;
 import com.google.gwt.core.client.ScriptInjector;
 
 import org.jboss.errai.ioc.client.api.LoadAsync;
+import org.uberfire.async.UberfireActivityFragment;
 import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 import org.uberfire.ext.widgets.common.client.resources.HtmlEditorResources;
 
 import static com.google.gwt.core.client.ScriptInjector.TOP_WINDOW;
 
 @ApplicationScoped
-@LoadAsync
+@LoadAsync(UberfireActivityFragment.class)
 public class HtmlEditorLibraryLoader {
 
     private boolean scriptsAreLoaded = false;

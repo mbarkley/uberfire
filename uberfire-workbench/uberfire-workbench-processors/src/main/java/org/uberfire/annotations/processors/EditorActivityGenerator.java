@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.enterprise.context.ApplicationScoped;
@@ -168,6 +170,7 @@ public class EditorActivityGenerator extends AbstractGenerator {
                                                                                 processingEnvironment);
         final List<String> qualifiers = GeneratorUtils.getAllQualifiersDeclarationFromType(classElement);
         final boolean isAsync = GeneratorUtils.getIsAsync(classElement);
+        final Optional<TypeElement> asyncFragment = GeneratorUtils.getAsyncFragmentId(processingEnvironment.getTypeUtils(), classElement);
 
         if (GeneratorUtils.debugLoggingEnabled()) {
             messager.printMessage(Kind.NOTE,
@@ -318,6 +321,13 @@ public class EditorActivityGenerator extends AbstractGenerator {
                  qualifiers);
         root.put("isAsync",
                  isAsync);
+        asyncFragment
+            .ifPresent(type -> {
+              root.put("asyncFragmentName",
+                       type.getQualifiedName().toString());
+              root.put("asyncFragmentSimpleName",
+                       type.getSimpleName().toString());
+            });
 
         //Generate code
         final StringWriter sw = new StringWriter();

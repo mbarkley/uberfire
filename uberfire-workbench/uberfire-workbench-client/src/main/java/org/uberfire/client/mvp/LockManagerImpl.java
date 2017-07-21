@@ -34,7 +34,10 @@ import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+
+import org.jboss.errai.ioc.client.api.LoadAsync;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.uberfire.async.UberfireActivityFragment;
 import org.uberfire.backend.vfs.impl.LockInfo;
 import org.uberfire.backend.vfs.impl.LockResult;
 import org.uberfire.client.resources.i18n.WorkbenchConstants;
@@ -50,6 +53,7 @@ import org.uberfire.workbench.events.ResourceUpdatedEvent;
  * {@link VFSLockServiceProxy} for lock management.
  */
 @Dependent
+@LoadAsync(UberfireActivityFragment.class)
 public class LockManagerImpl implements LockManager {
 
     @Inject
@@ -79,7 +83,7 @@ public class LockManagerImpl implements LockManager {
     private boolean unlockRequestPending;
 
     private boolean lockSyncComplete;
-    private List<Runnable> syncCompleteRunnables = new ArrayList<Runnable>();
+    private List<Runnable> syncCompleteRunnables = new ArrayList<>();
 
     private Timer reloadTimer;
 
@@ -254,6 +258,7 @@ public class LockManagerImpl implements LockManager {
         if (reloadTimer == null) {
             reloadTimer = new Timer() {
 
+                @Override
                 public void run() {
                     reload();
                 }

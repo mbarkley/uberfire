@@ -22,6 +22,7 @@
   <inherits name='org.jboss.errai.ioc.Container'/>
 
   <source path='annotations'/>
+  <source path='async'/>
   <source path='backend'/>
   <source path='debug'/>
   <source path='lifecycle'/>

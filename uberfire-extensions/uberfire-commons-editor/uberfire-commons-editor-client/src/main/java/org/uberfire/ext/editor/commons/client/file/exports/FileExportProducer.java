@@ -22,6 +22,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.LoadAsync;
+import org.uberfire.async.UberfireActivityFragment;
 import org.uberfire.ext.editor.commons.client.file.exports.jso.FileExportScriptInjector;
 
 /**
@@ -29,7 +30,7 @@ import org.uberfire.ext.editor.commons.client.file.exports.jso.FileExportScriptI
  * Also ensures the sources are injected on demand.
  */
 @ApplicationScoped
-@LoadAsync
+@LoadAsync(UberfireActivityFragment.class)
 public class FileExportProducer {
 
     private final FileExportScriptInjector fsScriptInjector;
@@ -49,19 +50,19 @@ public class FileExportProducer {
     }
 
     @Produces
-    @LoadAsync
+    @LoadAsync(UberfireActivityFragment.class)
     public TextFileExport forText() {
         return new TextFileExport();
     }
 
     @Produces
-    @LoadAsync
+    @LoadAsync(UberfireActivityFragment.class)
     public PdfFileExport forPDF() {
         return new PdfFileExport();
     }
 
     @Produces
-    @LoadAsync
+    @LoadAsync(UberfireActivityFragment.class)
     public ImageFileExport forImage() {
         return new ImageFileExport();
     }

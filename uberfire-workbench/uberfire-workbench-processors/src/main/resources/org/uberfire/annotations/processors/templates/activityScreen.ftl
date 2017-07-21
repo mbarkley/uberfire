@@ -67,6 +67,9 @@ import org.jboss.errai.ioc.client.api.ActivatedBy;
 <#if isAsync>
 import org.jboss.errai.ioc.client.api.LoadAsync;
 </#if>
+<#if asyncFragmentName??>
+import ${asyncFragmentName};
+</#if>
 <#if isDynamic>
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
@@ -83,7 +86,11 @@ import org.jboss.errai.ioc.client.api.Shared;
 @JsType
 </#if>
 <#if isAsync>
+<#if asyncFragmentSimpleName??>
+@LoadAsync(${asyncFragmentSimpleName}.class)
+<#else>
 @LoadAsync
+</#if>
 </#if>
 <#list qualifiers as qualifier>
 ${qualifier}
